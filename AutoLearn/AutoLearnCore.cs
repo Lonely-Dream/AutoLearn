@@ -200,33 +200,44 @@ namespace AutoLearn
                     course.JumpToCourse(cookie.Value);
                     Int64 result;
                     int countRetry = 1;
-                    const int MaxRetry = 60;
+                    const int MaxRetry = 30;
                     do
                     {
-                        Object ret = driver.ExecuteAsyncScript(JSCodeTest, "checkVideoPlay()");
-                        if (ret == null)
-                        {
-                            loger.Log("checkVideoPlay() Fail！");
-                            Thread.Sleep(1000);
-                            continue;
-                        }
-                        result = (Int64)ret;
+                        result = (Int64)driver.ExecuteAsyncScript(JSCodeTest, "checkVideoPlay()");
                         if(result == 0)
                         {
                             break;
                         }
-                        if(result == -3)
+                        else if(result == -1)
+                        {
+                            loger.Log("video组件未找到");
+                        }
+                        else if(result == -2)
+                        {
+                            loger.Log("frame未加载完成");
+                        }
+                        else if(result == -3)
                         {
                             loger.Log("有课程正在学习中，尝试终止它。");
+                            Thread.Sleep(2000);
+                            break;
                         }
                         else
                         {
-                            loger.Log("Loding...");
-                            Thread.Sleep(1000);
+                            loger.Log("未知错误。");
+                        }
+
+                        loger.Log(String.Format("Loding... {0}/{1}", countRetry++, MaxRetry));
+                        Thread.Sleep(1000);
+                        if(countRetry == MaxRetry)
+                        {
+                            result = 1;
+                            break;
                         }
                     } while (true);
-                    if(result == -3)
+                    if(result == 1 || result == -3)
                     {
+                        loger.Log("重新加载该课程。");
                         continue;
                     }
                     loger.Log("开始学习: " + course.Name);

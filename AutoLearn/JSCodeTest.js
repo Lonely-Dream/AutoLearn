@@ -23,13 +23,18 @@ function getCourseLists(pageSize) {
 }
 
 function closeCourse(courseId){
-    $.ajax({
-        type: "POST",
-        url: "/els/html/courseStudyItem/courseStudyItem.exitStudy.do?courseId="+courseId,
-        success: function (d) {
-            console.log("关闭");
-        }
-    });
+    var param = "elsSign="+CONFIG.elnSessionId;
+    var url = "https://sxqc-gbpy.21tb.com/els/html/courseStudyItem/courseStudyItem.exitStudy.do?courseId="+courseId;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST",url,false);
+    xhr.withCredentials =true;
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function(){
+        console.log("关闭", xhr.responseText);
+    }
+
+    xhr.send(param);
 }
 
 function checkVideoPlay(){
@@ -38,7 +43,7 @@ function checkVideoPlay(){
         var courseId = text.substr(text.indexOf("courseId")+9,32);
         console.log(courseId,"学习中")
         closeCourse(courseId);
-        return -3;
+        callback(-3);
     }
     var frame = window.frames[0];
     if(frame === undefined){
@@ -47,6 +52,7 @@ function checkVideoPlay(){
     }
     var video = frame.document.getElementsByTagName("video")[0];
     if(video === null || video === undefined){
+        console.log("video组件未找到");
         callback(-1);
     }
     callback(0);
