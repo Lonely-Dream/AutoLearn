@@ -18,6 +18,7 @@ namespace AutoLearn
         private string JSCodeXHR;
         private string JSCodeOnlineVideoCourse;
         private string JSCodeTwoScreenCourse;
+        private string JSCodeOneScreenCourse;
         private string JSCodeTest;
         private List<Course> courses;
 
@@ -42,6 +43,10 @@ namespace AutoLearn
             {
                 using StreamReader sr = new StreamReader("JSCodeTwoScreenCourse.js");
                 JSCodeTwoScreenCourse = sr.ReadToEnd();
+            }
+            {
+                using StreamReader sr = new StreamReader("JSCodeOneScreenCourse.js");
+                JSCodeOneScreenCourse = sr.ReadToEnd();
             }
         }
         /// <summary>
@@ -148,7 +153,7 @@ namespace AutoLearn
                     }
                     else if (courseStandard == "TWOSCREEN")
                     {
-                        loger.Log(courseName);
+                        loger.Log(courseName+ " TWOSCREEN");
                         courses.Add(
                             new TwoScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
@@ -157,16 +162,16 @@ namespace AutoLearn
                     }
                     else if (courseStandard == "ONESCREEN")
                     {
-                        loger.Log(courseName);
+                        loger.Log(courseName+ " ONESCREEN");
                         courses.Add(
-                            new TwoScreenCourse(courseId, courseName, shouldGetScore,
+                            new OneScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeTwoScreenCourse, JSCodeXHR)
+                            driver, loger, JSCodeOneScreenCourse, JSCodeXHR)
                         );
                     }
                     else if (courseStandard == "THREESCREEN")
                     {
-                        loger.Log(courseName);
+                        loger.Log(courseName+ " THREESCREEN");
                         courses.Add(
                             new TwoScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,

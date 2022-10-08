@@ -17,6 +17,9 @@
     <None Update="JSCodeCommonCourse.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="JSCodeOneScreenCourse.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="JSCodeOnlineVideoCourse.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -92,4 +92,24 @@ function evaluateCourse(courseId){
     });
 }
 
+function courseExam(courseId,answers){
+    var param = {
+        willGoStep: 'COURSE_EXAM',
+        //answers: JSON.stringify(formData),
+        answers:answers,
+        courseId: info.courseId,
+        examUserId: info.examUserId
+    };
+
+    $.ajax({
+        type: 'POST',
+        async: false,
+        url: '/els/html/studyCourse/studyCourse.saveCourseExam.do?courseType=NEW_COURSE_CENTER&eln_session_id=' + CONFIG.elnSessionId + "&elsSign=" + CONFIG.elnSessionId,
+        data: param,
+        success: function (d) {
+            console.log(d);
+        }
+    });
+}
+
 eval(arguments[0])
