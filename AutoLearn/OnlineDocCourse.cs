@@ -8,9 +8,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AutoLearn
 {
-    internal class OneScreenCourse : Course
+    internal class OnlineDocCourse : Course
     {
-        public OneScreenCourse(string id, string name, float score,
+        public OnlineDocCourse(string id, string name, float score,
             float period, string code, string stepToGetScore,
             ChromeDriver driver, Loger loger, string checkCode, string XHRCode)
             : base(id, driver, loger, checkCode, XHRCode)
@@ -21,7 +21,7 @@ namespace AutoLearn
             Code = code ?? throw new ArgumentNullException(nameof(code));
             StepToGetScore = stepToGetScore ?? throw new ArgumentNullException(nameof(stepToGetScore));
         }
-        public OneScreenCourse(string id, ChromeDriver driver, Loger loger, string checkCode, string XHRCode)
+        public OnlineDocCourse(string id, ChromeDriver driver, Loger loger, string checkCode, string XHRCode)
             : base(id, driver, loger, checkCode, XHRCode)
         {
             ;
@@ -29,7 +29,7 @@ namespace AutoLearn
         public override void CloseCourse()
         {
             //throw new NotImplementedException();
-            loger.Log("尝试关闭OneScreenCourse");
+            loger.Log("尝试关闭OnlineDoc");
         }
 
         public override void JumpToCourse(string eln_session_id)
@@ -52,6 +52,7 @@ namespace AutoLearn
             Object ret = driver.ExecuteAsyncScript(JSCodeCourse, "checkVideo()");
             if (ret != null)
             {
+                Thread.Sleep(15000);//降低该类型课程的交互速度
                 return (Int64)ret == -1;
             }
             return false;

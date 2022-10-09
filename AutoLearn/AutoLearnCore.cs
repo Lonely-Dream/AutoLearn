@@ -20,6 +20,7 @@ namespace AutoLearn
         private string JSCodeTwoScreenCourse;
         private string JSCodeOneScreenCourse;
         private string JSCodeTest;
+        private string JSCodeOnlineDoc;
         private List<Course> courses;
 
         public bool IsRunning { get; private set; }
@@ -47,6 +48,10 @@ namespace AutoLearn
             {
                 using StreamReader sr = new StreamReader("JSCodeOneScreenCourse.js");
                 JSCodeOneScreenCourse = sr.ReadToEnd();
+            }
+            {
+                using StreamReader sr = new StreamReader("JSCodeOnlineDoc.js");
+                JSCodeOnlineDoc = sr.ReadToEnd();
             }
         }
         /// <summary>
@@ -151,6 +156,24 @@ namespace AutoLearn
                             driver, loger, JSCodeOnlineVideoCourse, JSCodeXHR)
                         );
                     }
+                    else if (courseStandard == "ONLINEDOC")
+                    {
+                        loger.Log(courseName + " ONLINEDOC");
+                        courses.Add(
+                            new OnlineDocCourse(courseId, courseName, shouldGetScore,
+                            coursePeriod, courseCode, stepToGetScore,
+                            driver, loger, JSCodeOnlineDoc, JSCodeXHR)
+                        );
+                    }
+                    else if (courseStandard == "ONESCREEN")
+                    {
+                        loger.Log(courseName + " ONESCREEN");
+                        courses.Add(
+                            new OneScreenCourse(courseId, courseName, shouldGetScore,
+                            coursePeriod, courseCode, stepToGetScore,
+                            driver, loger, JSCodeOneScreenCourse, JSCodeXHR)
+                        );
+                    }
                     else if (courseStandard == "TWOSCREEN")
                     {
                         loger.Log(courseName+ " TWOSCREEN");
@@ -158,15 +181,6 @@ namespace AutoLearn
                             new TwoScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
                             driver, loger, JSCodeTwoScreenCourse, JSCodeXHR)
-                        );
-                    }
-                    else if (courseStandard == "ONESCREEN")
-                    {
-                        loger.Log(courseName+ " ONESCREEN");
-                        courses.Add(
-                            new OneScreenCourse(courseId, courseName, shouldGetScore,
-                            coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeOneScreenCourse, JSCodeXHR)
                         );
                     }
                     else if (courseStandard == "THREESCREEN")
@@ -192,9 +206,11 @@ namespace AutoLearn
         }
         public void Learn()
         {
+            if(driver == null)
+            {
+                return;
+            }
             Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
-            //loger.Log(cookie.Name);
-            //loger.Log(cookie.Value);
             for (int i = 0; i < courses.Count; )
             {
                 Course course = courses[i];
@@ -248,7 +264,7 @@ namespace AutoLearn
                     loger.Log("开始学习: " + course.Name);
                     while (!course.Learn())
                     {
-                        Thread.Sleep(2000);
+                        Thread.Sleep(5000);
                         if (!IsRunning)
                         {
                             loger.Log("停止学习");

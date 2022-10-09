@@ -30,6 +30,7 @@ namespace AutoLearn
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -266,6 +267,7 @@ namespace AutoLearn
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.button1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "AutoLearn";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_Closing);
