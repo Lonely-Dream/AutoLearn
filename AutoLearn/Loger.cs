@@ -23,7 +23,17 @@ namespace AutoLearn
         }
         public void Save()
         {
-            using StreamWriter writer = new StreamWriter("AutoLearnLog.log");
+            string filename = string.Format("log/AutoLearnLog{0}.log", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            string? dir = Path.GetDirectoryName(filename);
+            if (dir == null)
+            {
+                return;
+            }
+            if(!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            using StreamWriter writer = new StreamWriter(filename);
             foreach(string item in IListBox.Items)
             {
                 writer.WriteLine(item);

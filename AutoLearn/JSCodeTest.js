@@ -5,16 +5,14 @@ for(var i =0; i<arguments.length;++i){
 
 //获取当前课程JavaScript
 function getCourseLists(pageSize) {
-    // var url = '/els/html/courseCenter/courseCenter.studyTaskList.do?' +
-    //     'courseType=NEW_COURSE_CENTER&' +
-    //     'page.pageSize=' + pageSize + '&' +
-    //     'page.sortName=TASKTIME&' +
-    //     'courseStudyRecord.courseStudyType=SELECTIVE&' +
-    //     'courseStudyRecord.filterPartyClass=false&' +
-    //     'courseStudyRecord.courseStatus=STUDY&' +
-    //     'courseStudyRecord.courseStatus=NOT_STARTED&' +
-    //     'page.pageNo=1';
-    var url = "/els/html/courseCenter/courseCenter.studyTaskList.do?courseType=NEW_COURSE_CENTER&page.pageSize"+pageSize+"&page.sortName=STUDYTIME&courseStudyRecord.filterPartyClass=false&categoryId=&courseStudyRecord.srcName=&courseStudyRecord.courseStudyType=&courseStudyRecord.stepToGetScore=&courseStudyRecord.courseStatus=NOT_STARTED&courseStudyRecord.courseInfo.terminal=&page.pageNo=1&current_app_id=&courseStudyRecord.courseStatus=STUDY";
+    var url = '/els/html/courseCenter/courseCenter.studyTaskList.do?' +
+         'courseType=NEW_COURSE_CENTER&' +
+         'page.pageSize=' + pageSize + '&' +
+         'page.sortName=TASKTIME&' +
+         'courseStudyRecord.courseStudyType=MUST&' +
+         //'courseStudyRecord.courseStatus=STUDY&' +
+         'courseStudyRecord.filterPartyClass=false&' +
+         'page.pageNo=1';
     $.ajax({
         url: url,
         success: function (d) {

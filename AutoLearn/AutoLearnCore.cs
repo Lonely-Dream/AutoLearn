@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,7 +14,8 @@ namespace AutoLearn
 {
     internal class AutoLearnCore
     {
-        private ChromeDriver? driver;
+        //private ChromeDriver? driver;
+        private WebDriver? driver;
         private Loger loger;
         private string JSCodeXHR;
         private string JSCodeOnlineVideoCourse;
@@ -22,6 +24,7 @@ namespace AutoLearn
         private string JSCodeTest;
         private string JSCodeOnlineDoc;
         private List<Course> courses;
+        public int playSpeed = 1;
 
         public bool IsRunning { get; private set; }
         public AutoLearnCore(Loger loger)
@@ -54,18 +57,62 @@ namespace AutoLearn
                 JSCodeOnlineDoc = sr.ReadToEnd();
             }
         }
+        public void CreateDriver()
+        {
+            try
+            {
+                //ChromeOptions chromeOptions = new ChromeOptions();
+                //chromeOptions.BinaryLocation = "./chrome-win64/chrome.exe";
+                //driver = new ChromeDriver(chromeOptions);
+                driver = new ChromeDriver();
+                return;
+            }
+            catch (DriverServiceNotFoundException e)
+            {
+                loger.Log(e.Message);
+                loger.Log("Chrome Driver未找到");
+                loger.Log("尝试启动Edge浏览器");
+            }
+            catch (InvalidOperationException e)
+            {
+                loger.Log(e.Message);
+                loger.Log("Chrome Driver版本不兼容");
+                loger.Log("尝试启动Edge浏览器");
+            }
+            catch (Exception e)
+            {
+                loger.Log(e.Message);
+                loger.Log("未定义故障");
+                loger.Log("尝试启动Edge浏览器");
+            }
+
+            try
+            {
+                driver = new EdgeDriver();
+                return;
+            }
+            catch (Exception ee)
+            {
+                loger.Log(ee.Message);
+                loger.Log("未定义故障");
+                driver = null;
+                return ;
+            }
+        }
         /// <summary>
         /// 初始化浏览器
         /// </summary>
-        public void Init()
+        public bool Init()
         {
-            driver = new();
-            if(driver == null)
+            CreateDriver();
+
+            if (driver == null)
             {
                 IsRunning = false;
                 throw new ArgumentNullException(nameof(driver));
             }
             IsRunning = true;
+            return true;
         }
         /// <summary>
         /// 关闭浏览器
@@ -127,12 +174,18 @@ namespace AutoLearn
                 float shouldGetScore = item["shouldGetScore"].Value<float>();
                 float coursePeriod = item["coursePeriod"].Value<float>();
                 string currentStep = item["currentStep"].Value<string>();
+                bool limited = item["limited"].Value<bool>();
 
                 if (courseStandard == null)
                 {
                     loger.Log("读取课程类型错误。");
                     continue;
-                } 
+                }
+                if (limited)
+                {
+                    loger.Log(courseName + " 受限课程，将跳过。");
+                    continue;
+                }
                 if(currentStep == "COURSE_EVALUATE")
                 {
                     loger.Log("待评价：" + courseName + " 类型：" + courseStandard);
@@ -214,6 +267,8 @@ namespace AutoLearn
             for (int i = 0; i < courses.Count; )
             {
                 Course course = courses[i];
+                int cnt_init = 0;
+                int realPlaySpeed = 0;
 
                 try
                 {
@@ -262,9 +317,19 @@ namespace AutoLearn
                         continue;
                     }
                     loger.Log("开始学习: " + course.Name);
-                    while (!course.Learn())
+                    while (!course.Learn(realPlaySpeed))
                     {
                         Thread.Sleep(5000);
+                        //视频开始时，倍速可能会导致视频反复横跳
+                        if (cnt_init > 4)
+                        {
+                            realPlaySpeed = playSpeed;
+                        }
+                        else
+                        {
+                            cnt_init++;
+                        }
+
                         if (!IsRunning)
                         {
                             loger.Log("停止学习");

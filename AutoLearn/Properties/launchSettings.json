@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AutoLearn": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false,
+      "authenticationMode": "None",
+      "remoteDebugMachine": ""
+    }
+  }
+}

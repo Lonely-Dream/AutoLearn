@@ -35,12 +35,12 @@ namespace AutoLearn
         /// </summary>
         public string StepToGetScore { get; set; }
         
-        public ChromeDriver driver;
+        public WebDriver driver;
         public Loger loger;
         protected string JSCodeCourse;
         protected string JSCodeXHR;
 
-        protected Course(string id, ChromeDriver driver, Loger loger, string checkCode, string XHRCode)
+        protected Course(string id, WebDriver driver, Loger loger, string checkCode, string XHRCode)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             this.driver = driver ?? throw new ArgumentNullException(nameof(driver));
@@ -49,7 +49,7 @@ namespace AutoLearn
             this.JSCodeXHR = XHRCode;
         }
 
-        public abstract bool Learn();
+        public abstract bool Learn(int playSpeed);
         public abstract void JumpToCourse(string eln_session_id);
         public abstract void CloseCourse();
     }

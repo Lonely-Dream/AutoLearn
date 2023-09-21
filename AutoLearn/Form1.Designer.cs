@@ -31,253 +31,307 @@ namespace AutoLearn
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button1 = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBoxAutoEvaluate = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBoxPassword = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBoxUsername = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.buttonLearnGXK = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBoxPassword2 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBoxUsername2 = new System.Windows.Forms.TextBox();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.SuspendLayout();
+            button1 = new Button();
+            listBox1 = new ListBox();
+            groupBox1 = new GroupBox();
+            checkBox1 = new CheckBox();
+            numericUpDown1 = new NumericUpDown();
+            checkBoxAutoEvaluate = new CheckBox();
+            label2 = new Label();
+            textBoxPassword = new TextBox();
+            label1 = new Label();
+            textBoxUsername = new TextBox();
+            button2 = new Button();
+            groupBox2 = new GroupBox();
+            buttonLearnGXK = new Button();
+            label3 = new Label();
+            textBoxPassword2 = new TextBox();
+            label4 = new Label();
+            textBoxUsername2 = new TextBox();
+            dateTimePicker1 = new DateTimePicker();
+            dateTimePicker2 = new DateTimePicker();
+            label5 = new Label();
+            label6 = new Label();
+            button3 = new Button();
+            textBoxServerURL = new TextBox();
+            button4 = new Button();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            groupBox2.SuspendLayout();
+            SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(80, 28);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "启动";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            button1.Location = new Point(12, 12);
+            button1.Name = "button1";
+            button1.Size = new Size(80, 28);
+            button1.TabIndex = 0;
+            button1.Text = "启动";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // listBox1
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.ItemHeight = 17;
-            this.listBox1.Location = new System.Drawing.Point(12, 138);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.ScrollAlwaysVisible = true;
-            this.listBox1.Size = new System.Drawing.Size(814, 242);
-            this.listBox1.TabIndex = 2;
+            listBox1.FormattingEnabled = true;
+            listBox1.HorizontalScrollbar = true;
+            listBox1.ItemHeight = 17;
+            listBox1.Location = new Point(12, 149);
+            listBox1.Name = "listBox1";
+            listBox1.ScrollAlwaysVisible = true;
+            listBox1.Size = new Size(814, 242);
+            listBox1.TabIndex = 2;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBoxAutoEvaluate);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.textBoxPassword);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBoxUsername);
-            this.groupBox1.Location = new System.Drawing.Point(244, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(288, 105);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "专业课设置";
+            groupBox1.Controls.Add(checkBox1);
+            groupBox1.Controls.Add(numericUpDown1);
+            groupBox1.Controls.Add(checkBoxAutoEvaluate);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(textBoxPassword);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(textBoxUsername);
+            groupBox1.Location = new Point(244, 12);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(288, 105);
+            groupBox1.TabIndex = 3;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "专业课设置";
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new Point(162, 55);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(75, 21);
+            checkBox1.TabIndex = 7;
+            checkBox1.Text = "是否倍速";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            // 
+            // numericUpDown1
+            // 
+            numericUpDown1.Enabled = false;
+            numericUpDown1.Location = new Point(237, 53);
+            numericUpDown1.Name = "numericUpDown1";
+            numericUpDown1.ReadOnly = true;
+            numericUpDown1.Size = new Size(45, 23);
+            numericUpDown1.TabIndex = 6;
+            numericUpDown1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numericUpDown1.ValueChanged += numericUpDown1_ValueChanged;
             // 
             // checkBoxAutoEvaluate
             // 
-            this.checkBoxAutoEvaluate.AutoSize = true;
-            this.checkBoxAutoEvaluate.Checked = true;
-            this.checkBoxAutoEvaluate.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxAutoEvaluate.Location = new System.Drawing.Point(175, 29);
-            this.checkBoxAutoEvaluate.Name = "checkBoxAutoEvaluate";
-            this.checkBoxAutoEvaluate.Size = new System.Drawing.Size(99, 21);
-            this.checkBoxAutoEvaluate.TabIndex = 4;
-            this.checkBoxAutoEvaluate.Text = "是否自动评价";
-            this.checkBoxAutoEvaluate.UseVisualStyleBackColor = true;
+            checkBoxAutoEvaluate.AutoSize = true;
+            checkBoxAutoEvaluate.Checked = true;
+            checkBoxAutoEvaluate.CheckState = CheckState.Checked;
+            checkBoxAutoEvaluate.Location = new Point(162, 26);
+            checkBoxAutoEvaluate.Name = "checkBoxAutoEvaluate";
+            checkBoxAutoEvaluate.Size = new Size(99, 21);
+            checkBoxAutoEvaluate.TabIndex = 4;
+            checkBoxAutoEvaluate.Text = "是否自动评价";
+            checkBoxAutoEvaluate.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 56);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 17);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "密码：";
+            label2.AutoSize = true;
+            label2.Location = new Point(6, 56);
+            label2.Name = "label2";
+            label2.Size = new Size(44, 17);
+            label2.TabIndex = 3;
+            label2.Text = "密码：";
             // 
             // textBoxPassword
             // 
-            this.textBoxPassword.Location = new System.Drawing.Point(56, 53);
-            this.textBoxPassword.Name = "textBoxPassword";
-            this.textBoxPassword.PasswordChar = '*';
-            this.textBoxPassword.Size = new System.Drawing.Size(100, 23);
-            this.textBoxPassword.TabIndex = 2;
+            textBoxPassword.Location = new Point(56, 53);
+            textBoxPassword.Name = "textBoxPassword";
+            textBoxPassword.PasswordChar = '*';
+            textBoxPassword.Size = new Size(100, 23);
+            textBoxPassword.TabIndex = 2;
+            textBoxPassword.TextChanged += textBoxPassword_TextChanged;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 27);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 17);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "账号：";
+            label1.AutoSize = true;
+            label1.Location = new Point(6, 27);
+            label1.Name = "label1";
+            label1.Size = new Size(44, 17);
+            label1.TabIndex = 1;
+            label1.Text = "账号：";
             // 
             // textBoxUsername
             // 
-            this.textBoxUsername.Location = new System.Drawing.Point(56, 24);
-            this.textBoxUsername.Name = "textBoxUsername";
-            this.textBoxUsername.Size = new System.Drawing.Size(100, 23);
-            this.textBoxUsername.TabIndex = 0;
+            textBoxUsername.Location = new Point(56, 24);
+            textBoxUsername.Name = "textBoxUsername";
+            textBoxUsername.Size = new Size(100, 23);
+            textBoxUsername.TabIndex = 0;
+            textBoxUsername.TextChanged += textBoxUsername_TextChanged;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(125, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(80, 28);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "开始学习";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            button2.Location = new Point(125, 12);
+            button2.Name = "button2";
+            button2.Size = new Size(80, 28);
+            button2.TabIndex = 4;
+            button2.Text = "开始学习";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.buttonLearnGXK);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.textBoxPassword2);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.textBoxUsername2);
-            this.groupBox2.Location = new System.Drawing.Point(538, 12);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(288, 105);
-            this.groupBox2.TabIndex = 5;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "公需课设置";
+            groupBox2.Controls.Add(buttonLearnGXK);
+            groupBox2.Controls.Add(label3);
+            groupBox2.Controls.Add(textBoxPassword2);
+            groupBox2.Controls.Add(label4);
+            groupBox2.Controls.Add(textBoxUsername2);
+            groupBox2.Location = new Point(538, 12);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(288, 105);
+            groupBox2.TabIndex = 5;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "公需课设置";
             // 
             // buttonLearnGXK
             // 
-            this.buttonLearnGXK.Location = new System.Drawing.Point(196, 54);
-            this.buttonLearnGXK.Name = "buttonLearnGXK";
-            this.buttonLearnGXK.Size = new System.Drawing.Size(86, 23);
-            this.buttonLearnGXK.TabIndex = 4;
-            this.buttonLearnGXK.Text = "学习公需课";
-            this.buttonLearnGXK.UseVisualStyleBackColor = true;
-            this.buttonLearnGXK.Click += new System.EventHandler(this.buttonLearnGXK_Click);
+            buttonLearnGXK.Location = new Point(196, 54);
+            buttonLearnGXK.Name = "buttonLearnGXK";
+            buttonLearnGXK.Size = new Size(86, 23);
+            buttonLearnGXK.TabIndex = 4;
+            buttonLearnGXK.Text = "学习公需课";
+            buttonLearnGXK.UseVisualStyleBackColor = true;
+            buttonLearnGXK.Click += buttonLearnGXK_Click;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 56);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(44, 17);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "密码：";
+            label3.AutoSize = true;
+            label3.Location = new Point(6, 56);
+            label3.Name = "label3";
+            label3.Size = new Size(44, 17);
+            label3.TabIndex = 3;
+            label3.Text = "密码：";
             // 
             // textBoxPassword2
             // 
-            this.textBoxPassword2.Location = new System.Drawing.Point(56, 53);
-            this.textBoxPassword2.Name = "textBoxPassword2";
-            this.textBoxPassword2.PasswordChar = '*';
-            this.textBoxPassword2.Size = new System.Drawing.Size(100, 23);
-            this.textBoxPassword2.TabIndex = 2;
+            textBoxPassword2.Location = new Point(56, 53);
+            textBoxPassword2.Name = "textBoxPassword2";
+            textBoxPassword2.PasswordChar = '*';
+            textBoxPassword2.Size = new Size(100, 23);
+            textBoxPassword2.TabIndex = 2;
+            textBoxPassword2.TextChanged += textBoxPassword2_TextChanged;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 27);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 17);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "账号：";
+            label4.AutoSize = true;
+            label4.Location = new Point(6, 27);
+            label4.Name = "label4";
+            label4.Size = new Size(44, 17);
+            label4.TabIndex = 1;
+            label4.Text = "账号：";
             // 
             // textBoxUsername2
             // 
-            this.textBoxUsername2.Location = new System.Drawing.Point(56, 24);
-            this.textBoxUsername2.Name = "textBoxUsername2";
-            this.textBoxUsername2.Size = new System.Drawing.Size(226, 23);
-            this.textBoxUsername2.TabIndex = 0;
+            textBoxUsername2.Location = new Point(56, 24);
+            textBoxUsername2.Name = "textBoxUsername2";
+            textBoxUsername2.Size = new Size(226, 23);
+            textBoxUsername2.TabIndex = 0;
+            textBoxUsername2.TextChanged += textBoxUsername2_TextChanged;
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.CustomFormat = "yyyy-MM-dd";
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(12, 62);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(107, 23);
-            this.dateTimePicker1.TabIndex = 6;
-            this.dateTimePicker1.Value = new System.DateTime(2022, 9, 15, 0, 0, 0, 0);
-            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+            dateTimePicker1.CustomFormat = "yyyy-MM-dd";
+            dateTimePicker1.Format = DateTimePickerFormat.Custom;
+            dateTimePicker1.Location = new Point(12, 62);
+            dateTimePicker1.Name = "dateTimePicker1";
+            dateTimePicker1.Size = new Size(107, 23);
+            dateTimePicker1.TabIndex = 6;
+            dateTimePicker1.Value = new DateTime(2022, 9, 15, 0, 0, 0, 0);
+            dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
             // 
             // dateTimePicker2
             // 
-            this.dateTimePicker2.CustomFormat = "yyyy-MM-dd";
-            this.dateTimePicker2.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker2.Location = new System.Drawing.Point(125, 62);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(107, 23);
-            this.dateTimePicker2.TabIndex = 7;
-            this.dateTimePicker2.Value = new System.DateTime(2022, 9, 30, 15, 20, 43, 0);
-            this.dateTimePicker2.ValueChanged += new System.EventHandler(this.dateTimePicker2_ValueChanged);
+            dateTimePicker2.CustomFormat = "yyyy-MM-dd";
+            dateTimePicker2.Format = DateTimePickerFormat.Custom;
+            dateTimePicker2.Location = new Point(125, 62);
+            dateTimePicker2.Name = "dateTimePicker2";
+            dateTimePicker2.Size = new Size(107, 23);
+            dateTimePicker2.TabIndex = 7;
+            dateTimePicker2.Value = new DateTime(2022, 9, 30, 15, 20, 43, 0);
+            dateTimePicker2.ValueChanged += dateTimePicker2_ValueChanged;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(125, 92);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(44, 17);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "学时：";
+            label5.AutoSize = true;
+            label5.Location = new Point(125, 92);
+            label5.Name = "label5";
+            label5.Size = new Size(44, 17);
+            label5.TabIndex = 8;
+            label5.Text = "学时：";
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(125, 115);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(44, 17);
-            this.label6.TabIndex = 9;
-            this.label6.Text = "学分：";
+            label6.AutoSize = true;
+            label6.Location = new Point(125, 115);
+            label6.Name = "label6";
+            label6.Size = new Size(44, 17);
+            label6.TabIndex = 9;
+            label6.Text = "学分：";
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(12, 92);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(80, 40);
-            this.button3.TabIndex = 10;
-            this.button3.Text = "查询";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            button3.Location = new Point(12, 92);
+            button3.Name = "button3";
+            button3.Size = new Size(80, 40);
+            button3.TabIndex = 10;
+            button3.Text = "查询";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
+            // textBoxServerURL
+            // 
+            textBoxServerURL.Location = new Point(538, 120);
+            textBoxServerURL.Name = "textBoxServerURL";
+            textBoxServerURL.Size = new Size(194, 23);
+            textBoxServerURL.TabIndex = 11;
+            textBoxServerURL.Text = "http://172.10.50.229:12345";
+            // 
+            // button4
+            // 
+            button4.Location = new Point(751, 120);
+            button4.Name = "button4";
+            button4.Size = new Size(75, 23);
+            button4.TabIndex = 12;
+            button4.Text = "检查更新";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(838, 392);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.dateTimePicker2);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.button1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form1";
-            this.Text = "AutoLearn";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_Closing);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(838, 406);
+            Controls.Add(button4);
+            Controls.Add(textBoxServerURL);
+            Controls.Add(button3);
+            Controls.Add(label6);
+            Controls.Add(label5);
+            Controls.Add(dateTimePicker2);
+            Controls.Add(dateTimePicker1);
+            Controls.Add(groupBox2);
+            Controls.Add(button2);
+            Controls.Add(groupBox1);
+            Controls.Add(listBox1);
+            Controls.Add(button1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "Form1";
+            Text = "AutoLearn";
+            FormClosing += Form1_Closing;
+            Shown += Form1_Shown;
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -302,5 +356,9 @@ namespace AutoLearn
         private Label label5;
         private Label label6;
         private Button button3;
+        private CheckBox checkBox1;
+        private NumericUpDown numericUpDown1;
+        private TextBox textBoxServerURL;
+        private Button button4;
     }
 }

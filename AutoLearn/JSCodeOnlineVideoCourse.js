@@ -48,6 +48,7 @@ function checkVideo() {
     }
     else {
         video.play();
+        console.log("video.playbackRate", video.playbackRate);
         video.muted = true;
         var timeLeft = parseInt(video.duration - video.currentTime);
         console.log("剩余时间:", timeLeft);

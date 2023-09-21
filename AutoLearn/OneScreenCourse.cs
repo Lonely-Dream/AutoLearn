@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Chrome;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
 
 namespace AutoLearn
 {
@@ -12,7 +13,7 @@ namespace AutoLearn
     {
         public OneScreenCourse(string id, string name, float score,
             float period, string code, string stepToGetScore,
-            ChromeDriver driver, Loger loger, string checkCode, string XHRCode)
+            WebDriver driver, Loger loger, string checkCode, string XHRCode)
             : base(id, driver, loger, checkCode, XHRCode)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
@@ -21,7 +22,7 @@ namespace AutoLearn
             Code = code ?? throw new ArgumentNullException(nameof(code));
             StepToGetScore = stepToGetScore ?? throw new ArgumentNullException(nameof(stepToGetScore));
         }
-        public OneScreenCourse(string id, ChromeDriver driver, Loger loger, string checkCode, string XHRCode)
+        public OneScreenCourse(string id, WebDriver driver, Loger loger, string checkCode, string XHRCode)
             : base(id, driver, loger, checkCode, XHRCode)
         {
             ;
@@ -47,8 +48,16 @@ namespace AutoLearn
             driver.Navigate().GoToUrl(message);
         }
 
-        public override bool Learn()
+        public override bool Learn(int playSpeed)
         {
+            try
+            {
+                driver.ExecuteScript("window.frames[0].document.getElementsByTagName('video')[0].playbackRate =" + playSpeed.ToString());
+            }
+            catch (Exception e)
+            {
+                loger.Log(e.Message);
+            }
             Object ret = driver.ExecuteAsyncScript(JSCodeCourse, "checkVideo()");
             if (ret != null)
             {
