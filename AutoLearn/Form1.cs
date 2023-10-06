@@ -19,10 +19,12 @@ namespace AutoLearn
         private bool isSpeedUp = false;
         private int playSpeed = 1;
         private bool isIniting = true;
+        private Thread learnThread;
+        private bool isStartLearn = false;
 
         private PackInformation packInformation;
 
-        private readonly string Version = "V0.1.2";
+        private readonly string Version = "V0.1.3";
 
         private void SetConfig(Configuration configuration, string key, string value)
         {
@@ -142,14 +144,14 @@ namespace AutoLearn
                             cnt++;
                         }
                     }
-                    if(cnt != 0)
+                    if (cnt != 0)
                     {
                         // 更新完成
                         loger.Log("下载完成");
 
                         // 在这里添加重启 AutoLearn 的逻辑
                         // 弹出消息框
-                        MessageBox.Show(packInformation.message+"\n下载完成即将重启AutoLearn");
+                        MessageBox.Show(packInformation.message + "\n下载完成即将重启AutoLearn");
 
                         // 执行重启 AutoLearn 的逻辑
                         ProcessStartInfo processInfo = new ProcessStartInfo
@@ -226,7 +228,7 @@ namespace AutoLearn
         {
             if (learnCore.IsRunning)
             {
-                button1.Text = "启动";
+                button__start.Text = "启动";
                 learnCore.Quit();
                 loger.Log("会话结束");
                 button2.Enabled = false;
@@ -241,7 +243,7 @@ namespace AutoLearn
                     return;
                 }
                 loger.Log("正在加载...");
-                button1.Text = "停止";
+                button__start.Text = "停止";
                 learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
                 button2.Enabled = true;
                 button3.Enabled = true;
@@ -270,11 +272,29 @@ namespace AutoLearn
 
         private void button2_Click(object sender, EventArgs e)
         {
-            learnCore.GetCourseList(checkBoxAutoEvaluate.Checked);
-            Thread learnThread = new Thread(learnCore.Learn);
-            learnThread.IsBackground = true;
-            learnThread.Start();
             button2.Enabled = false;
+            if (isStartLearn)
+            {
+                button2.Text = "开始学习";
+
+                learnCore.IsRunning = false;
+                learnThread.Join();
+                loger.Log("线程终止");
+
+                isStartLearn = false;
+            }
+            else
+            {
+                button2.Text = "停止学习";
+
+                learnCore.GetCourseList(checkBoxAutoEvaluate.Checked);
+                learnThread = new Thread(learnCore.Learn);
+                learnThread.IsBackground = true;
+                learnThread.Start();
+
+                isStartLearn = true;
+            }
+            button2.Enabled = true;
         }
 
         private void buttonLearnGXK_Click(object sender, EventArgs e)

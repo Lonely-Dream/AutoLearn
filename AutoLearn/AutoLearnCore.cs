@@ -26,7 +26,7 @@ namespace AutoLearn
         private List<Course> courses;
         public int playSpeed = 1;
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning { get; set; }
         public AutoLearnCore(Loger loger)
         {
             this.loger = loger ?? throw new ArgumentNullException(nameof(loger));
