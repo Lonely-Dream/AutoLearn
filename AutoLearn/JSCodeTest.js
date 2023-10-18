@@ -4,7 +4,7 @@ for(var i =0; i<arguments.length;++i){
 }
 
 //获取当前课程JavaScript
-function getCourseLists(pageSize) {
+function _getCourseLists(pageSize) {
     var url = '/els/html/courseCenter/courseCenter.studyTaskList.do?' +
          'courseType=NEW_COURSE_CENTER&' +
          'page.pageSize=' + pageSize + '&' +
@@ -13,6 +13,21 @@ function getCourseLists(pageSize) {
          //'courseStudyRecord.courseStatus=STUDY&' +
          'courseStudyRecord.filterPartyClass=false&' +
          'page.pageNo=1';
+    $.ajax({
+        url: url,
+        success: function (d) {
+            callback(JSON.stringify(d));
+        }
+    });
+}
+
+function getCourseLists(pageSize, queryURL) {
+    var url = '/els/html/courseCenter/courseCenter.studyTaskList.do?' +
+        'courseType=NEW_COURSE_CENTER&' +
+        'page.pageSize=' + pageSize + '&' +
+        queryURL+'&'+
+        'courseStudyRecord.filterPartyClass=false&' +
+        'page.pageNo=1';
     $.ajax({
         url: url,
         success: function (d) {

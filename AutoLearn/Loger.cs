@@ -43,7 +43,7 @@ namespace AutoLearn
         private void _Log(string log)
         {
             IListBox.Items.Add(log);
-            IListBox.TopIndex = IListBox.Items.Count - (IListBox.Height / IListBox.ItemHeight);
+            IListBox.TopIndex = IListBox.Items.Count - (IListBox.Height / IListBox.ItemHeight)+1;
             Debug.WriteLine(log);
         }
     }

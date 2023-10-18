@@ -57,47 +57,82 @@ namespace AutoLearn
                 JSCodeOnlineDoc = sr.ReadToEnd();
             }
         }
+        public string GenerateQueryURL(List<int[]> courseFilters)
+        {
+            string[] courseFilterType = new string[] {
+                "courseStudyRecord.getWay",
+                "courseStudyRecord.courseStudyType",
+                "courseStudyRecord.stepToGetScore",
+                "courseStudyRecord.courseStatus",
+                "page.sortName"
+            };
+            string[,] courseFilterItem = new string[,] {
+                //courseStudyRecord.getWay
+                {"","SELF","STUDY_PLAN","RM_PROJECT" },
+
+                //courseStudyRecord.courseStudyType
+                {"","MUST","SELECTIVE","SELF" },
+
+                //courseStudyRecord.stepToGetScore
+                {"","COURSE_COURSE_STUDY","COURSE_EVALUATE","COURSE_EXAM" },
+
+                //courseStudyRecord.courseStatus
+                {"","NOT_STARTED","STUDY","HAS_ENDED" },
+
+                //page.sortName
+                {"STUDYTIME","TASKTIME","LIMITTIME","STUDYTIME" }
+            };
+            List<string> temp = new List<string> { };
+
+            foreach (var courseFilter in courseFilters)
+            {
+                temp.Add(string.Format("{0}={1}",
+                        courseFilterType[courseFilter[0]],
+                        courseFilterItem[courseFilter[0], courseFilter[1]]));
+            }
+
+            return string.Join("&", temp);
+        }
         public void CreateDriver()
         {
             try
             {
-                //ChromeOptions chromeOptions = new ChromeOptions();
-                //chromeOptions.BinaryLocation = "./chrome-win64/chrome.exe";
-                //driver = new ChromeDriver(chromeOptions);
                 driver = new ChromeDriver();
                 return;
             }
             catch (DriverServiceNotFoundException e)
             {
                 loger.Log(e.Message);
-                loger.Log("Chrome Driver未找到");
-                loger.Log("尝试启动Edge浏览器");
+                loger.Log("Chrome Driver未找到，请自行下载或联系开发者");
             }
             catch (InvalidOperationException e)
             {
                 loger.Log(e.Message);
-                loger.Log("Chrome Driver版本不兼容");
-                loger.Log("尝试启动Edge浏览器");
+                loger.Log("Chrome Driver版本不兼容，请自行更新或联系开发者");
             }
             catch (Exception e)
             {
                 loger.Log(e.Message);
                 loger.Log("未定义故障");
-                loger.Log("尝试启动Edge浏览器");
             }
 
+            loger.Log("尝试启动Edge浏览器");
             try
             {
                 driver = new EdgeDriver();
                 return;
             }
-            catch (Exception ee)
+            catch (DriverServiceNotFoundException e)
             {
-                loger.Log(ee.Message);
-                loger.Log("未定义故障");
-                driver = null;
-                return ;
+                loger.Log(e.Message);
+                loger.Log("Edge Driver未找到，请自行下载或联系开发者");
             }
+            catch (Exception e)
+            {
+                loger.Log(e.Message);
+                loger.Log("未定义故障");
+            }
+            driver = null;
         }
         /// <summary>
         /// 初始化浏览器
@@ -109,7 +144,7 @@ namespace AutoLearn
             if (driver == null)
             {
                 IsRunning = false;
-                throw new ArgumentNullException(nameof(driver));
+                return false;
             }
             IsRunning = true;
             return true;
@@ -145,7 +180,7 @@ namespace AutoLearn
             loger.Log(cookie.Name);
             loger.Log(cookie.Value);
         }
-        public void GetCourseList(bool isEvalution)
+        public void GetCourseList(List<int[]> courseFilters, bool isEvalution)
         {
             if (driver == null)
             {
@@ -155,15 +190,21 @@ namespace AutoLearn
             loger.Log(cookie.Name);
             loger.Log(cookie.Value);
 
+            string queryURL = GenerateQueryURL(courseFilters);
+            loger.Log(queryURL);
+
             //获取待学习课程 第一次访问
-            string buffer = (string)driver.ExecuteAsyncScript(JSCodeTest, "getCourseLists(12)");
+            string buffer = (string)driver.ExecuteAsyncScript(JSCodeTest, 
+                string.Format("getCourseLists({0},'{1}')", 12,queryURL));
             JObject keyValuePairs = JObject.Parse(buffer);
             int totalCourse = keyValuePairs["total"].Value<int>();
 
             //获取全部待学习课程
-            buffer = (string)driver.ExecuteAsyncScript(JSCodeTest, "getCourseLists("+totalCourse+")");
+            buffer = (string)driver.ExecuteAsyncScript(JSCodeTest,
+                string.Format("getCourseLists({0},'{1}')", totalCourse, queryURL));
             keyValuePairs = JObject.Parse(buffer);
             JArray rows = keyValuePairs["rows"].Value<JArray>();
+            int cntExam = 0;
             foreach(JObject item in rows)
             {
                 string courseStandard = item["courseStandard"].Value<string>();
@@ -250,12 +291,19 @@ namespace AutoLearn
                         loger.Log("暂时不支持：" + courseName + " 类型：" + courseStandard);
                     }
                 }
+                else if(currentStep == "COURSE_EXAM")
+                {
+                    ++cntExam;
+                    loger.Log(courseName + " 需要进行考试");
+                }
                 else
                 {
                     loger.Log(courseName + " 处于：" + currentStep);
                 }
             }
-            loger.Log("目前待学习课程：" + totalCourse);
+            loger.Log("当前筛选下的课程总数:" + totalCourse.ToString());
+            loger.Log("待考试课程数:" + cntExam.ToString());
+            loger.Log("待学习课程数:" + courses.Count.ToString());
         }
         public void Learn()
         {
@@ -348,6 +396,9 @@ namespace AutoLearn
                     loger.Log(course.Id + e.Message);
                 }
             }
+
+            loger.Log("当前筛选下的所有课程学习阶段已完成");
+            MessageBox.Show("当前筛选下的所有课程学习阶段已完成");
         }
         private void EvalutionCourse(string courseId)
         {

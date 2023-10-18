@@ -42,29 +42,30 @@ namespace AutoLearn
             label1 = new Label();
             textBoxUsername = new TextBox();
             groupBox3 = new GroupBox();
-            cb_getWay_rm = new CheckBox();
-            cb_getWay_plan = new CheckBox();
-            cb_getWay_self = new CheckBox();
-            cb_sortName_limitime = new CheckBox();
-            cb_sortName_tasktime = new CheckBox();
-            cb_courseStatus_has_ended = new CheckBox();
-            cb_courseStatus_study = new CheckBox();
-            cb_courseStatus_not_started = new CheckBox();
-            cb_sortName_studytime = new CheckBox();
-            cb_courseStatus_all = new CheckBox();
+            cb_cf_43 = new CheckBox();
+            cb_cf_03 = new CheckBox();
+            cb_cf_02 = new CheckBox();
+            cb_cf_01 = new CheckBox();
+            cb_cf_42 = new CheckBox();
+            cb_cf_41 = new CheckBox();
+            cb_cf_33 = new CheckBox();
+            cb_cf_32 = new CheckBox();
+            cb_cf_31 = new CheckBox();
+            cb_cf_40 = new CheckBox();
+            cb_cf_30 = new CheckBox();
             label10 = new Label();
-            cb_stepToGetScore_exam = new CheckBox();
-            cb_stepToGetScore_evaluate = new CheckBox();
-            cb_stepToGetScore_study = new CheckBox();
-            cb_stepToGetScore_all = new CheckBox();
+            cb_cf_23 = new CheckBox();
+            cb_cf_22 = new CheckBox();
+            cb_cf_21 = new CheckBox();
+            cb_cf_20 = new CheckBox();
             label9 = new Label();
-            cb_courseStudyType_self = new CheckBox();
-            cb_courseStudyType_selective = new CheckBox();
-            cb_courseStudyType_must = new CheckBox();
-            cb_courseStudyType_all = new CheckBox();
+            cb_cf_13 = new CheckBox();
+            cb_cf_12 = new CheckBox();
+            cb_cf_11 = new CheckBox();
+            cb_cf_10 = new CheckBox();
             label8 = new Label();
             label7 = new Label();
-            cb_getWay_all = new CheckBox();
+            cb_cf_00 = new CheckBox();
             label11 = new Label();
             button2 = new Button();
             groupBox2 = new GroupBox();
@@ -200,29 +201,30 @@ namespace AutoLearn
             // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(cb_getWay_rm);
-            groupBox3.Controls.Add(cb_getWay_plan);
-            groupBox3.Controls.Add(cb_getWay_self);
-            groupBox3.Controls.Add(cb_sortName_limitime);
-            groupBox3.Controls.Add(cb_sortName_tasktime);
-            groupBox3.Controls.Add(cb_courseStatus_has_ended);
-            groupBox3.Controls.Add(cb_courseStatus_study);
-            groupBox3.Controls.Add(cb_courseStatus_not_started);
-            groupBox3.Controls.Add(cb_sortName_studytime);
-            groupBox3.Controls.Add(cb_courseStatus_all);
+            groupBox3.Controls.Add(cb_cf_43);
+            groupBox3.Controls.Add(cb_cf_03);
+            groupBox3.Controls.Add(cb_cf_02);
+            groupBox3.Controls.Add(cb_cf_01);
+            groupBox3.Controls.Add(cb_cf_42);
+            groupBox3.Controls.Add(cb_cf_41);
+            groupBox3.Controls.Add(cb_cf_33);
+            groupBox3.Controls.Add(cb_cf_32);
+            groupBox3.Controls.Add(cb_cf_31);
+            groupBox3.Controls.Add(cb_cf_40);
+            groupBox3.Controls.Add(cb_cf_30);
             groupBox3.Controls.Add(label10);
-            groupBox3.Controls.Add(cb_stepToGetScore_exam);
-            groupBox3.Controls.Add(cb_stepToGetScore_evaluate);
-            groupBox3.Controls.Add(cb_stepToGetScore_study);
-            groupBox3.Controls.Add(cb_stepToGetScore_all);
+            groupBox3.Controls.Add(cb_cf_23);
+            groupBox3.Controls.Add(cb_cf_22);
+            groupBox3.Controls.Add(cb_cf_21);
+            groupBox3.Controls.Add(cb_cf_20);
             groupBox3.Controls.Add(label9);
-            groupBox3.Controls.Add(cb_courseStudyType_self);
-            groupBox3.Controls.Add(cb_courseStudyType_selective);
-            groupBox3.Controls.Add(cb_courseStudyType_must);
-            groupBox3.Controls.Add(cb_courseStudyType_all);
+            groupBox3.Controls.Add(cb_cf_13);
+            groupBox3.Controls.Add(cb_cf_12);
+            groupBox3.Controls.Add(cb_cf_11);
+            groupBox3.Controls.Add(cb_cf_10);
             groupBox3.Controls.Add(label8);
             groupBox3.Controls.Add(label7);
-            groupBox3.Controls.Add(cb_getWay_all);
+            groupBox3.Controls.Add(cb_cf_00);
             groupBox3.Controls.Add(label11);
             groupBox3.Location = new Point(218, 6);
             groupBox3.Name = "groupBox3";
@@ -231,111 +233,137 @@ namespace AutoLearn
             groupBox3.TabStop = false;
             groupBox3.Text = "课程类型";
             // 
-            // cb_getWay_rm
+            // cb_cf_43
             // 
-            cb_getWay_rm.AutoSize = true;
-            cb_getWay_rm.Location = new Point(219, 19);
-            cb_getWay_rm.Name = "cb_getWay_rm";
-            cb_getWay_rm.Size = new Size(75, 21);
-            cb_getWay_rm.TabIndex = 3;
-            cb_getWay_rm.Text = "学习地图";
-            cb_getWay_rm.UseVisualStyleBackColor = true;
+            cb_cf_43.AutoCheck = false;
+            cb_cf_43.AutoSize = true;
+            cb_cf_43.Location = new Point(219, 111);
+            cb_cf_43.Name = "cb_cf_43";
+            cb_cf_43.Size = new Size(51, 21);
+            cb_cf_43.TabIndex = 24;
+            cb_cf_43.Text = "到期";
+            cb_cf_43.UseVisualStyleBackColor = true;
+            cb_cf_43.Visible = false;
+            cb_cf_43.MouseClick += cb_cf_4x_MouseClick;
             // 
-            // cb_getWay_plan
+            // cb_cf_03
             // 
-            cb_getWay_plan.AutoSize = true;
-            cb_getWay_plan.Location = new Point(161, 19);
-            cb_getWay_plan.Name = "cb_getWay_plan";
-            cb_getWay_plan.Size = new Size(51, 21);
-            cb_getWay_plan.TabIndex = 2;
-            cb_getWay_plan.Text = "安排";
-            cb_getWay_plan.UseVisualStyleBackColor = true;
+            cb_cf_03.AutoSize = true;
+            cb_cf_03.Location = new Point(219, 19);
+            cb_cf_03.Name = "cb_cf_03";
+            cb_cf_03.Size = new Size(75, 21);
+            cb_cf_03.TabIndex = 3;
+            cb_cf_03.Text = "学习地图";
+            cb_cf_03.UseVisualStyleBackColor = true;
+            cb_cf_03.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_getWay_self
+            // cb_cf_02
             // 
-            cb_getWay_self.AutoSize = true;
-            cb_getWay_self.Location = new Point(103, 19);
-            cb_getWay_self.Name = "cb_getWay_self";
-            cb_getWay_self.Size = new Size(51, 21);
-            cb_getWay_self.TabIndex = 1;
-            cb_getWay_self.Text = "自选";
-            cb_getWay_self.UseVisualStyleBackColor = true;
+            cb_cf_02.AutoSize = true;
+            cb_cf_02.Location = new Point(161, 19);
+            cb_cf_02.Name = "cb_cf_02";
+            cb_cf_02.Size = new Size(51, 21);
+            cb_cf_02.TabIndex = 2;
+            cb_cf_02.Text = "安排";
+            cb_cf_02.UseVisualStyleBackColor = true;
+            cb_cf_02.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_sortName_limitime
+            // cb_cf_01
             // 
-            cb_sortName_limitime.AutoSize = true;
-            cb_sortName_limitime.Location = new Point(161, 111);
-            cb_sortName_limitime.Name = "cb_sortName_limitime";
-            cb_sortName_limitime.Size = new Size(51, 21);
-            cb_sortName_limitime.TabIndex = 23;
-            cb_sortName_limitime.Text = "到期";
-            cb_sortName_limitime.UseVisualStyleBackColor = true;
+            cb_cf_01.AutoSize = true;
+            cb_cf_01.Location = new Point(103, 19);
+            cb_cf_01.Name = "cb_cf_01";
+            cb_cf_01.Size = new Size(51, 21);
+            cb_cf_01.TabIndex = 1;
+            cb_cf_01.Text = "自选";
+            cb_cf_01.UseVisualStyleBackColor = true;
+            cb_cf_01.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_sortName_tasktime
+            // cb_cf_42
             // 
-            cb_sortName_tasktime.AutoSize = true;
-            cb_sortName_tasktime.Location = new Point(103, 111);
-            cb_sortName_tasktime.Name = "cb_sortName_tasktime";
-            cb_sortName_tasktime.Size = new Size(51, 21);
-            cb_sortName_tasktime.TabIndex = 22;
-            cb_sortName_tasktime.Text = "分配";
-            cb_sortName_tasktime.UseVisualStyleBackColor = true;
+            cb_cf_42.AutoCheck = false;
+            cb_cf_42.AutoSize = true;
+            cb_cf_42.Location = new Point(161, 111);
+            cb_cf_42.Name = "cb_cf_42";
+            cb_cf_42.Size = new Size(51, 21);
+            cb_cf_42.TabIndex = 23;
+            cb_cf_42.Text = "到期";
+            cb_cf_42.UseVisualStyleBackColor = true;
+            cb_cf_42.MouseClick += cb_cf_4x_MouseClick;
             // 
-            // cb_courseStatus_has_ended
+            // cb_cf_41
             // 
-            cb_courseStatus_has_ended.AutoSize = true;
-            cb_courseStatus_has_ended.Location = new Point(219, 88);
-            cb_courseStatus_has_ended.Name = "cb_courseStatus_has_ended";
-            cb_courseStatus_has_ended.Size = new Size(63, 21);
-            cb_courseStatus_has_ended.TabIndex = 21;
-            cb_courseStatus_has_ended.Text = "已完成";
-            cb_courseStatus_has_ended.UseVisualStyleBackColor = true;
+            cb_cf_41.AutoCheck = false;
+            cb_cf_41.AutoSize = true;
+            cb_cf_41.Location = new Point(103, 111);
+            cb_cf_41.Name = "cb_cf_41";
+            cb_cf_41.Size = new Size(51, 21);
+            cb_cf_41.TabIndex = 22;
+            cb_cf_41.Text = "分配";
+            cb_cf_41.UseVisualStyleBackColor = true;
+            cb_cf_41.MouseClick += cb_cf_4x_MouseClick;
             // 
-            // cb_courseStatus_study
+            // cb_cf_33
             // 
-            cb_courseStatus_study.AutoSize = true;
-            cb_courseStatus_study.Checked = true;
-            cb_courseStatus_study.CheckState = CheckState.Checked;
-            cb_courseStatus_study.Location = new Point(161, 88);
-            cb_courseStatus_study.Name = "cb_courseStatus_study";
-            cb_courseStatus_study.Size = new Size(63, 21);
-            cb_courseStatus_study.TabIndex = 20;
-            cb_courseStatus_study.Text = "进行中";
-            cb_courseStatus_study.UseVisualStyleBackColor = true;
+            cb_cf_33.AutoSize = true;
+            cb_cf_33.Location = new Point(219, 88);
+            cb_cf_33.Name = "cb_cf_33";
+            cb_cf_33.Size = new Size(63, 21);
+            cb_cf_33.TabIndex = 21;
+            cb_cf_33.Text = "已完成";
+            cb_cf_33.UseVisualStyleBackColor = true;
+            cb_cf_33.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_courseStatus_not_started
+            // cb_cf_32
             // 
-            cb_courseStatus_not_started.AutoSize = true;
-            cb_courseStatus_not_started.Checked = true;
-            cb_courseStatus_not_started.CheckState = CheckState.Checked;
-            cb_courseStatus_not_started.Location = new Point(103, 88);
-            cb_courseStatus_not_started.Name = "cb_courseStatus_not_started";
-            cb_courseStatus_not_started.Size = new Size(63, 21);
-            cb_courseStatus_not_started.TabIndex = 19;
-            cb_courseStatus_not_started.Text = "未学习";
-            cb_courseStatus_not_started.UseVisualStyleBackColor = true;
+            cb_cf_32.AutoSize = true;
+            cb_cf_32.Checked = true;
+            cb_cf_32.CheckState = CheckState.Checked;
+            cb_cf_32.Location = new Point(161, 88);
+            cb_cf_32.Name = "cb_cf_32";
+            cb_cf_32.Size = new Size(63, 21);
+            cb_cf_32.TabIndex = 20;
+            cb_cf_32.Text = "进行中";
+            cb_cf_32.UseVisualStyleBackColor = true;
+            cb_cf_32.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_sortName_studytime
+            // cb_cf_31
             // 
-            cb_sortName_studytime.AutoSize = true;
-            cb_sortName_studytime.Checked = true;
-            cb_sortName_studytime.CheckState = CheckState.Checked;
-            cb_sortName_studytime.Location = new Point(57, 111);
-            cb_sortName_studytime.Name = "cb_sortName_studytime";
-            cb_sortName_studytime.Size = new Size(51, 21);
-            cb_sortName_studytime.TabIndex = 17;
-            cb_sortName_studytime.Text = "学习";
-            cb_sortName_studytime.UseVisualStyleBackColor = true;
+            cb_cf_31.AutoSize = true;
+            cb_cf_31.Checked = true;
+            cb_cf_31.CheckState = CheckState.Checked;
+            cb_cf_31.Location = new Point(103, 88);
+            cb_cf_31.Name = "cb_cf_31";
+            cb_cf_31.Size = new Size(63, 21);
+            cb_cf_31.TabIndex = 19;
+            cb_cf_31.Text = "未学习";
+            cb_cf_31.UseVisualStyleBackColor = true;
+            cb_cf_31.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_courseStatus_all
+            // cb_cf_40
             // 
-            cb_courseStatus_all.AutoSize = true;
-            cb_courseStatus_all.Location = new Point(57, 88);
-            cb_courseStatus_all.Name = "cb_courseStatus_all";
-            cb_courseStatus_all.Size = new Size(51, 21);
-            cb_courseStatus_all.TabIndex = 16;
-            cb_courseStatus_all.Text = "全部";
-            cb_courseStatus_all.UseVisualStyleBackColor = true;
+            cb_cf_40.AutoCheck = false;
+            cb_cf_40.AutoSize = true;
+            cb_cf_40.Checked = true;
+            cb_cf_40.CheckState = CheckState.Checked;
+            cb_cf_40.Location = new Point(57, 111);
+            cb_cf_40.Name = "cb_cf_40";
+            cb_cf_40.Size = new Size(51, 21);
+            cb_cf_40.TabIndex = 17;
+            cb_cf_40.Text = "学习";
+            cb_cf_40.UseVisualStyleBackColor = true;
+            cb_cf_40.MouseClick += cb_cf_4x_MouseClick;
+            // 
+            // cb_cf_30
+            // 
+            cb_cf_30.AutoSize = true;
+            cb_cf_30.Location = new Point(57, 88);
+            cb_cf_30.Name = "cb_cf_30";
+            cb_cf_30.Size = new Size(51, 21);
+            cb_cf_30.TabIndex = 16;
+            cb_cf_30.Text = "全部";
+            cb_cf_30.UseVisualStyleBackColor = true;
+            cb_cf_30.CheckedChanged += cb_cf_CheckedChanged;
             // 
             // label10
             // 
@@ -346,47 +374,51 @@ namespace AutoLearn
             label10.TabIndex = 15;
             label10.Text = "学习状态";
             // 
-            // cb_stepToGetScore_exam
+            // cb_cf_23
             // 
-            cb_stepToGetScore_exam.AutoSize = true;
-            cb_stepToGetScore_exam.Location = new Point(219, 65);
-            cb_stepToGetScore_exam.Name = "cb_stepToGetScore_exam";
-            cb_stepToGetScore_exam.Size = new Size(51, 21);
-            cb_stepToGetScore_exam.TabIndex = 14;
-            cb_stepToGetScore_exam.Text = "测试";
-            cb_stepToGetScore_exam.UseVisualStyleBackColor = true;
+            cb_cf_23.AutoSize = true;
+            cb_cf_23.Location = new Point(219, 65);
+            cb_cf_23.Name = "cb_cf_23";
+            cb_cf_23.Size = new Size(51, 21);
+            cb_cf_23.TabIndex = 14;
+            cb_cf_23.Text = "测试";
+            cb_cf_23.UseVisualStyleBackColor = true;
+            cb_cf_23.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_stepToGetScore_evaluate
+            // cb_cf_22
             // 
-            cb_stepToGetScore_evaluate.AutoSize = true;
-            cb_stepToGetScore_evaluate.Location = new Point(161, 65);
-            cb_stepToGetScore_evaluate.Name = "cb_stepToGetScore_evaluate";
-            cb_stepToGetScore_evaluate.Size = new Size(51, 21);
-            cb_stepToGetScore_evaluate.TabIndex = 13;
-            cb_stepToGetScore_evaluate.Text = "评估";
-            cb_stepToGetScore_evaluate.UseVisualStyleBackColor = true;
+            cb_cf_22.AutoSize = true;
+            cb_cf_22.Location = new Point(161, 65);
+            cb_cf_22.Name = "cb_cf_22";
+            cb_cf_22.Size = new Size(51, 21);
+            cb_cf_22.TabIndex = 13;
+            cb_cf_22.Text = "评估";
+            cb_cf_22.UseVisualStyleBackColor = true;
+            cb_cf_22.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_stepToGetScore_study
+            // cb_cf_21
             // 
-            cb_stepToGetScore_study.AutoSize = true;
-            cb_stepToGetScore_study.Location = new Point(103, 65);
-            cb_stepToGetScore_study.Name = "cb_stepToGetScore_study";
-            cb_stepToGetScore_study.Size = new Size(51, 21);
-            cb_stepToGetScore_study.TabIndex = 12;
-            cb_stepToGetScore_study.Text = "学习";
-            cb_stepToGetScore_study.UseVisualStyleBackColor = true;
+            cb_cf_21.AutoSize = true;
+            cb_cf_21.Location = new Point(103, 65);
+            cb_cf_21.Name = "cb_cf_21";
+            cb_cf_21.Size = new Size(51, 21);
+            cb_cf_21.TabIndex = 12;
+            cb_cf_21.Text = "学习";
+            cb_cf_21.UseVisualStyleBackColor = true;
+            cb_cf_21.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_stepToGetScore_all
+            // cb_cf_20
             // 
-            cb_stepToGetScore_all.AutoSize = true;
-            cb_stepToGetScore_all.Checked = true;
-            cb_stepToGetScore_all.CheckState = CheckState.Checked;
-            cb_stepToGetScore_all.Location = new Point(57, 65);
-            cb_stepToGetScore_all.Name = "cb_stepToGetScore_all";
-            cb_stepToGetScore_all.Size = new Size(51, 21);
-            cb_stepToGetScore_all.TabIndex = 11;
-            cb_stepToGetScore_all.Text = "全部";
-            cb_stepToGetScore_all.UseVisualStyleBackColor = true;
+            cb_cf_20.AutoSize = true;
+            cb_cf_20.Checked = true;
+            cb_cf_20.CheckState = CheckState.Checked;
+            cb_cf_20.Location = new Point(57, 65);
+            cb_cf_20.Name = "cb_cf_20";
+            cb_cf_20.Size = new Size(51, 21);
+            cb_cf_20.TabIndex = 11;
+            cb_cf_20.Text = "全部";
+            cb_cf_20.UseVisualStyleBackColor = true;
+            cb_cf_20.CheckedChanged += cb_cf_CheckedChanged;
             // 
             // label9
             // 
@@ -397,47 +429,51 @@ namespace AutoLearn
             label9.TabIndex = 10;
             label9.Text = "结业条件";
             // 
-            // cb_courseStudyType_self
+            // cb_cf_13
             // 
-            cb_courseStudyType_self.AutoSize = true;
-            cb_courseStudyType_self.Location = new Point(219, 42);
-            cb_courseStudyType_self.Name = "cb_courseStudyType_self";
-            cb_courseStudyType_self.Size = new Size(51, 21);
-            cb_courseStudyType_self.TabIndex = 9;
-            cb_courseStudyType_self.Text = "任选";
-            cb_courseStudyType_self.UseVisualStyleBackColor = true;
+            cb_cf_13.AutoSize = true;
+            cb_cf_13.Location = new Point(219, 42);
+            cb_cf_13.Name = "cb_cf_13";
+            cb_cf_13.Size = new Size(51, 21);
+            cb_cf_13.TabIndex = 9;
+            cb_cf_13.Text = "任选";
+            cb_cf_13.UseVisualStyleBackColor = true;
+            cb_cf_13.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_courseStudyType_selective
+            // cb_cf_12
             // 
-            cb_courseStudyType_selective.AutoSize = true;
-            cb_courseStudyType_selective.Location = new Point(161, 42);
-            cb_courseStudyType_selective.Name = "cb_courseStudyType_selective";
-            cb_courseStudyType_selective.Size = new Size(51, 21);
-            cb_courseStudyType_selective.TabIndex = 8;
-            cb_courseStudyType_selective.Text = "选修";
-            cb_courseStudyType_selective.UseVisualStyleBackColor = true;
+            cb_cf_12.AutoSize = true;
+            cb_cf_12.Location = new Point(161, 42);
+            cb_cf_12.Name = "cb_cf_12";
+            cb_cf_12.Size = new Size(51, 21);
+            cb_cf_12.TabIndex = 8;
+            cb_cf_12.Text = "选修";
+            cb_cf_12.UseVisualStyleBackColor = true;
+            cb_cf_12.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_courseStudyType_must
+            // cb_cf_11
             // 
-            cb_courseStudyType_must.AutoSize = true;
-            cb_courseStudyType_must.Checked = true;
-            cb_courseStudyType_must.CheckState = CheckState.Checked;
-            cb_courseStudyType_must.Location = new Point(103, 42);
-            cb_courseStudyType_must.Name = "cb_courseStudyType_must";
-            cb_courseStudyType_must.Size = new Size(51, 21);
-            cb_courseStudyType_must.TabIndex = 7;
-            cb_courseStudyType_must.Text = "必修";
-            cb_courseStudyType_must.UseVisualStyleBackColor = true;
+            cb_cf_11.AutoSize = true;
+            cb_cf_11.Checked = true;
+            cb_cf_11.CheckState = CheckState.Checked;
+            cb_cf_11.Location = new Point(103, 42);
+            cb_cf_11.Name = "cb_cf_11";
+            cb_cf_11.Size = new Size(51, 21);
+            cb_cf_11.TabIndex = 7;
+            cb_cf_11.Text = "必修";
+            cb_cf_11.UseVisualStyleBackColor = true;
+            cb_cf_11.CheckedChanged += cb_cf_CheckedChanged;
             // 
-            // cb_courseStudyType_all
+            // cb_cf_10
             // 
-            cb_courseStudyType_all.AutoSize = true;
-            cb_courseStudyType_all.Location = new Point(57, 42);
-            cb_courseStudyType_all.Name = "cb_courseStudyType_all";
-            cb_courseStudyType_all.Size = new Size(51, 21);
-            cb_courseStudyType_all.TabIndex = 6;
-            cb_courseStudyType_all.Text = "全部";
-            cb_courseStudyType_all.UseVisualStyleBackColor = true;
+            cb_cf_10.AutoSize = true;
+            cb_cf_10.Location = new Point(57, 42);
+            cb_cf_10.Name = "cb_cf_10";
+            cb_cf_10.Size = new Size(51, 21);
+            cb_cf_10.TabIndex = 6;
+            cb_cf_10.Text = "全部";
+            cb_cf_10.UseVisualStyleBackColor = true;
+            cb_cf_10.CheckedChanged += cb_cf_CheckedChanged;
             // 
             // label8
             // 
@@ -457,18 +493,19 @@ namespace AutoLearn
             label7.TabIndex = 0;
             label7.Text = "课程来源";
             // 
-            // cb_getWay_all
+            // cb_cf_00
             // 
-            cb_getWay_all.AutoSize = true;
-            cb_getWay_all.Checked = true;
-            cb_getWay_all.CheckState = CheckState.Checked;
-            cb_getWay_all.Location = new Point(57, 19);
-            cb_getWay_all.Margin = new Padding(0);
-            cb_getWay_all.Name = "cb_getWay_all";
-            cb_getWay_all.Size = new Size(51, 21);
-            cb_getWay_all.TabIndex = 4;
-            cb_getWay_all.Text = "全部";
-            cb_getWay_all.UseVisualStyleBackColor = true;
+            cb_cf_00.AutoSize = true;
+            cb_cf_00.Checked = true;
+            cb_cf_00.CheckState = CheckState.Checked;
+            cb_cf_00.Location = new Point(57, 19);
+            cb_cf_00.Margin = new Padding(0);
+            cb_cf_00.Name = "cb_cf_00";
+            cb_cf_00.Size = new Size(51, 21);
+            cb_cf_00.TabIndex = 4;
+            cb_cf_00.Text = "全部";
+            cb_cf_00.UseVisualStyleBackColor = true;
+            cb_cf_00.CheckedChanged += cb_cf_CheckedChanged;
             // 
             // label11
             // 
@@ -713,31 +750,32 @@ namespace AutoLearn
         private Button button4;
         private GroupBox groupBox3;
         private Label label7;
-        private CheckBox cb_courseStudyType_selective;
-        private CheckBox cb_courseStudyType_must;
-        private CheckBox cb_courseStudyType_all;
+        private CheckBox cb_cf_12;
+        private CheckBox cb_cf_11;
+        private CheckBox cb_cf_10;
         private Label label8;
-        private CheckBox cb_getWay_all;
-        private CheckBox cb_getWay_rm;
-        private CheckBox cb_getWay_plan;
-        private CheckBox cb_getWay_self;
+        private CheckBox cb_cf_00;
+        private CheckBox cb_cf_03;
+        private CheckBox cb_cf_02;
+        private CheckBox cb_cf_01;
         private Label label10;
-        private CheckBox cb_stepToGetScore_exam;
-        private CheckBox cb_stepToGetScore_evaluate;
-        private CheckBox cb_stepToGetScore_study;
-        private CheckBox cb_stepToGetScore_all;
+        private CheckBox cb_cf_23;
+        private CheckBox cb_cf_22;
+        private CheckBox cb_cf_21;
+        private CheckBox cb_cf_20;
         private Label label9;
-        private CheckBox cb_courseStudyType_self;
-        private CheckBox cb_sortName_studytime;
-        private CheckBox cb_courseStatus_all;
-        private CheckBox cb_sortName_limitime;
-        private CheckBox cb_sortName_tasktime;
-        private CheckBox cb_courseStatus_has_ended;
-        private CheckBox cb_courseStatus_study;
-        private CheckBox cb_courseStatus_not_started;
+        private CheckBox cb_cf_13;
+        private CheckBox cb_cf_40;
+        private CheckBox cb_cf_30;
+        private CheckBox cb_cf_42;
+        private CheckBox cb_cf_41;
+        private CheckBox cb_cf_33;
+        private CheckBox cb_cf_32;
+        private CheckBox cb_cf_31;
         private Label label11;
         private TabControl tabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
+        private CheckBox cb_cf_43;
     }
 }

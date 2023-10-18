@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Diagnostics;
+using System.Security.Policy;
 
 namespace AutoLearn
 {
@@ -21,28 +22,10 @@ namespace AutoLearn
         private bool isIniting = true;
         private Thread learnThread;
         private bool isStartLearn = false;
-
         private PackInformation packInformation;
+        private CheckBox[,] courseFilterCheckBox;
+        private List<int[]> courseFilter;
 
-        private readonly string Version = "V0.1.3";
-
-        private void SetConfig(Configuration configuration, string key, string value)
-        {
-            if (configuration.AppSettings.Settings.AllKeys.Contains(key))
-            {
-                configuration.AppSettings.Settings[key].Value = value;
-            }
-            else
-            {
-                configuration.AppSettings.Settings.Add(key, value);
-            }
-        }
-        private string GetConfig(string key)
-        {
-            string? temp_item = ConfigurationManager.AppSettings[key];
-            temp_item ??= "";
-            return temp_item;
-        }
         static string CalculateMD5Checksum(string filePath)
         {
             if (!File.Exists(filePath))
@@ -96,7 +79,7 @@ namespace AutoLearn
         }
         private async Task CheckVersion()
         {
-            loger.Log("当前版本:" + Version);
+            loger.Log("当前版本:" + Config.VERSION);
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(textBoxServerURL.Text);
@@ -104,7 +87,7 @@ namespace AutoLearn
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync("/check_version?version=" + Version);
+                HttpResponseMessage response = await client.GetAsync("/check_version?version=" + Config.VERSION);
                 response.EnsureSuccessStatusCode();
                 string data = await response.Content.ReadAsStringAsync();
 
@@ -154,7 +137,7 @@ namespace AutoLearn
                         MessageBox.Show(packInformation.message + "\n下载完成即将重启AutoLearn");
 
                         // 执行重启 AutoLearn 的逻辑
-                        ProcessStartInfo processInfo = new ProcessStartInfo
+                        ProcessStartInfo processInfo = new()
                         {
                             FileName = "./update.bat",
                             CreateNoWindow = true, // 不创建命令提示符窗口
@@ -180,9 +163,26 @@ namespace AutoLearn
             }
         }
 
+        private void UpdateCourseFilter()
+        {
+            courseFilter = new List<int[]> { };
+            for (int i = 0; i < Config.CF_ROW; ++i)
+            {
+                for (int j = 0; j < Config.CF_COL; ++j)
+                {
+                    if (courseFilterCheckBox[i, j].Checked)
+                    {
+                        courseFilter.Add(new int[] { i, j });
+                    }
+                }
+            }
+        }
+
         public Form1()
         {
             InitializeComponent();
+            Text = string.Format("AutoLearn {0}", Config.VERSION);
+
             int x = Screen.GetBounds(this).Width - this.Width;
             //int y = Screen.GetBounds(this).Height - this.Height;
             this.Left = x;
@@ -191,20 +191,46 @@ namespace AutoLearn
             loger = new(listBox1);
             learnCore = new(loger);
 
+            // 初始化课程过滤器
+            courseFilterCheckBox = new CheckBox[Config.CF_ROW, Config.CF_COL];
+
+            for (int i = 0; i < Config.CF_ROW; ++i)
+            {
+                for (int j = 0; j < Config.CF_COL; ++j)
+                {
+                    Control? controls = Controls.Find(string.Format("cb_cf_{0}{1}", i, j), true).FirstOrDefault() ?? throw new Exception("初始化课程过滤器失败!");
+                    courseFilterCheckBox[i, j] = controls as CheckBox ?? throw new Exception("课程过滤器转换失败！");
+                }
+            }
+
             //开始加载配置
-            username = GetConfig("username");
-            password = GetConfig("password");
-            username2 = GetConfig("username2");
-            password2 = GetConfig("password2");
-            if (!Boolean.TryParse(GetConfig("isSpeedUp"), out isSpeedUp))
+            username = Config.GetConfig("username");
+            password = Config.GetConfig("password");
+            username2 = Config.GetConfig("username2");
+            password2 = Config.GetConfig("password2");
+            if (!bool.TryParse(Config.GetConfig("isSpeedUp"), out isSpeedUp))
             {
                 isSpeedUp = false;
             }
             numericUpDown1.Enabled = isSpeedUp;
-            if (!Int32.TryParse(GetConfig("playSpeed"), out playSpeed))
+            if (!int.TryParse(Config.GetConfig("playSpeed"), out playSpeed))
             {
                 playSpeed = 1;
             }
+            string courseFilterConfigString = Config.GetConfig("courseFilter");
+            if (!string.IsNullOrEmpty(courseFilterConfigString))
+            {
+                string[] courseFilterConfigs = courseFilterConfigString.Split(",");
+
+                for (int i = 0; i < Config.CF_ROW; ++i)
+                {
+                    for (int j = 0; j < Config.CF_COL; ++j)
+                    {
+                        courseFilterCheckBox[i, j].Checked = courseFilterConfigs[i * Config.CF_COL + j] == "1";
+                    }
+                }
+            }
+            UpdateCourseFilter();
 
             textBoxUsername.Text = username;
             textBoxPassword.Text = password;
@@ -222,6 +248,40 @@ namespace AutoLearn
             dateTimePicker2.Enabled = false;
 
             isIniting = false;
+        }
+        private void Form1_Closing(object sender, FormClosingEventArgs e)
+        {
+            learnCore.Quit();
+
+            //写配置项
+            Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            Config.SetConfig(configuration, "username", username);
+            Config.SetConfig(configuration, "password", password);
+            Config.SetConfig(configuration, "username2", username2);
+            Config.SetConfig(configuration, "password2", password2);
+            Config.SetConfig(configuration, "isSpeedUp", isSpeedUp.ToString());
+            Config.SetConfig(configuration, "playSpeed", playSpeed.ToString());
+
+            string[] courseFilterStates = new string[Config.CF_ROW * Config.CF_COL];
+            for (int i = 0; i < Config.CF_ROW; ++i)
+            {
+                for (int j = 0; j < Config.CF_COL; ++j)
+                {
+                    if (courseFilterCheckBox[i, j].Checked)
+                    {
+                        courseFilterStates[i * Config.CF_COL + j] = "1";
+                    }
+                    else
+                    {
+                        courseFilterStates[i * Config.CF_COL + j] = "0";
+                    }
+                }
+            }
+            Config.SetConfig(configuration, "courseFilter", string.Join(",", courseFilterStates));
+
+            configuration.Save();
+
+            loger.Save();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -252,24 +312,6 @@ namespace AutoLearn
                 button3_Click(null, null);
             }
         }
-
-        private void Form1_Closing(object sender, FormClosingEventArgs e)
-        {
-            learnCore.Quit();
-
-            //写配置项
-            Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            SetConfig(configuration, "username", username);
-            SetConfig(configuration, "password", password);
-            SetConfig(configuration, "username2", username2);
-            SetConfig(configuration, "password2", password2);
-            SetConfig(configuration, "isSpeedUp", isSpeedUp.ToString());
-            SetConfig(configuration, "playSpeed", playSpeed.ToString());
-            configuration.Save();
-
-            loger.Save();
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
             button2.Enabled = false;
@@ -278,7 +320,10 @@ namespace AutoLearn
                 button2.Text = "开始学习";
 
                 learnCore.IsRunning = false;
-                learnThread.Join();
+                if (learnThread.ThreadState == System.Threading.ThreadState.Running)
+                {
+                    learnThread.Join();
+                }
                 loger.Log("线程终止");
 
                 isStartLearn = false;
@@ -286,10 +331,14 @@ namespace AutoLearn
             else
             {
                 button2.Text = "停止学习";
+                learnCore.IsRunning = true;
 
-                learnCore.GetCourseList(checkBoxAutoEvaluate.Checked);
-                learnThread = new Thread(learnCore.Learn);
-                learnThread.IsBackground = true;
+                UpdateCourseFilter();
+                learnCore.GetCourseList(courseFilter, checkBoxAutoEvaluate.Checked);
+                learnThread = new Thread(learnCore.Learn)
+                {
+                    IsBackground = true
+                };
                 learnThread.Start();
 
                 isStartLearn = true;
@@ -300,12 +349,21 @@ namespace AutoLearn
         private void buttonLearnGXK_Click(object sender, EventArgs e)
         {
             ChromeDriver driver = new();
-            driver.Navigate().GoToUrl("http://yuanjian.xaito.net/index.php");
+            driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php");
             loger.Log("尝试登录公需课");
             driver.FindElement(By.Id("user")).SendKeys(username2);
             driver.FindElement(By.Id("pass")).SendKeys(password2);
             driver.FindElement(By.Id("submit-btn")).Submit();
             loger.Log("登陆成功");
+            try
+            {
+                Cookie cookie = driver.Manage().Cookies.GetCookieNamed("PHPSESSID");
+                loger.Log(cookie.Value);
+            }
+            catch (Exception)
+            {
+                loger.Log("？");
+            }
             string JSCodeCommonCourse;
             {
                 using StreamReader sr = new StreamReader("JSCodeCommonCourse.js");
@@ -313,38 +371,40 @@ namespace AutoLearn
             }
             Object ret = driver.ExecuteAsyncScript(JSCodeCommonCourse);
             string[] urls = new string[]{
-                "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=45",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=49",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=50",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=51",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=52",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=62",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=34",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=54",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=55",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=33",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=56",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=13",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=12",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=3",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=1",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=11",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=46",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=47",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=48",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=57",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=58",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=59",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=60",
-    "http://yuanjian.xaito.net/index.php?m=Index&a=video_show&id=61"
+                "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=45",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=49",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=50",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=51",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=52",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=62",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=34",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=54",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=55",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=33",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=56",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=13",
+
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=12",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=3",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=1",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=11",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=46",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=47",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=48",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=57",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=58",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=59",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=60",
+    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=61"
         };
-            foreach (string url in urls)
+            for (int i = 0; i < urls.Length; i++)
             {
-                driver.Navigate().GoToUrl(url);
+                driver.Navigate().GoToUrl(urls[i]);
+                loger.Log(string.Format("第{0}课学习完成", i + 1));
             }
-            driver.Navigate().GoToUrl("http://yuanjian.xaito.net/index.php?m=Index&a=exam&type=1");
+            driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php?m=Index&a=exam&type=1");
             loger.Log("公需课学习完成。");
-            driver.Quit();
+            //driver.Quit();
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -443,6 +503,82 @@ namespace AutoLearn
         private async void button4_Click(object sender, EventArgs e)
         {
             await CheckVersion();
+        }
+
+        private void cb_cf_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox cb = sender as CheckBox ?? throw new ArgumentNullException(nameof(sender));
+            int row = int.Parse(cb.Name.Substring(6, 1));
+            int col = int.Parse(cb.Name.Substring(7, 1));
+
+            //if (row == 4)
+            //{
+            //    // 该行为单选
+            //    if (cb.Checked)
+            //    {
+            //        for (int j = 0; j < Config.CF_COL; ++j)
+            //        {
+            //            if (j != col)
+            //            {
+            //                courseFilterCheckBox[row, j].Checked = false;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        cb.Checked = true;
+            //    }
+
+            //    return;
+            //}
+
+            // 其他行
+            if (col == 0)
+            {
+                // 选中了前4行 的all
+                if (cb.Checked)
+                {
+                    for (int j = 1; j < Config.CF_COL; ++j)
+                    {
+                        courseFilterCheckBox[row, j].Checked = false;
+                    }
+                }
+                //else
+                //{
+                //    cb.Checked = true;
+                //}
+            }
+            else
+            {
+                // 选中了每行的其他的
+                if (cb.Checked)
+                {
+                    courseFilterCheckBox[row, 0].Checked = false;
+                }
+            }
+        }
+
+        private void cb_cf_4x_MouseClick(object sender, MouseEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox ?? throw new ArgumentNullException(nameof(sender));
+            int row = int.Parse(cb.Name.Substring(6, 1));
+            int col = int.Parse(cb.Name.Substring(7, 1));
+
+            if (row == 4)
+            {
+                // 该行为单选
+                if (!cb.Checked)
+                {
+                    for (int j = 0; j < Config.CF_COL; ++j)
+                    {
+                        if (j != col)
+                        {
+                            courseFilterCheckBox[row, j].Checked = false;
+                        }
+                    }
+                }
+                cb.Checked = true;
+            }
         }
     }
 }
