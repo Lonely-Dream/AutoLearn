@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Diagnostics;
-using System.Security.Policy;
 
 namespace AutoLearn
 {
@@ -181,6 +180,8 @@ namespace AutoLearn
         public Form1()
         {
             InitializeComponent();
+            //this.TopLevel = true;
+
             Text = string.Format("AutoLearn {0}", Config.VERSION);
 
             int x = Screen.GetBounds(this).Width - this.Width;
@@ -467,10 +468,10 @@ namespace AutoLearn
             {
                 numericUpDown1.Value = 1;
             }
-            else if (numericUpDown1.Value > 8)
-            {
-                numericUpDown1.Value = 8;
-            }
+            //else if (numericUpDown1.Value > 8)
+            //{
+            //    numericUpDown1.Value = 8;
+            //}
             playSpeed = (int)numericUpDown1.Value;
             learnCore.playSpeed = playSpeed;
         }

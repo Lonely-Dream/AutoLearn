@@ -705,6 +705,7 @@ namespace AutoLearn
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
             Text = "AutoLearn";
+            TopMost = true;
             FormClosing += Form1_Closing;
             Shown += Form1_Shown;
             groupBox1.ResumeLayout(false);
