@@ -8,6 +8,8 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WebDriverManager;
+using WebDriverManager.DriverConfigs.Impl;
 
 
 namespace AutoLearn
@@ -97,6 +99,8 @@ namespace AutoLearn
         {
             try
             {
+                // 使用WebDriverManager下载Chrome Driver
+                new DriverManager().SetUpDriver(new ChromeConfig());
                 driver = new ChromeDriver();
                 return;
             }
@@ -119,6 +123,8 @@ namespace AutoLearn
             loger.Log("尝试启动Edge浏览器");
             try
             {
+                // 使用WebDriverManager下载Edge Driver
+                new DriverManager().SetUpDriver(new EdgeConfig());
                 driver = new EdgeDriver();
                 return;
             }

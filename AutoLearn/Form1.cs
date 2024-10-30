@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Diagnostics;
+using WebDriverManager.DriverConfigs.Impl;
+using WebDriverManager;
 
 namespace AutoLearn
 {
@@ -162,6 +164,26 @@ namespace AutoLearn
             }
         }
 
+        private async Task CheckWebDriver()
+        {
+            loger.Log("正在检查浏览器驱动，请稍等。");
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    // 确保 Edge 和 Chrome 驱动都已配置
+                    new DriverManager().SetUpDriver(new EdgeConfig());
+                    new DriverManager().SetUpDriver(new ChromeConfig());
+
+                    loger.Log("浏览器驱动正常。");
+                }
+                catch (Exception e)
+                {
+                    loger.Log($"浏览器驱动检查失败：{e.Message}");
+                }
+            });
+        }
         private void UpdateCourseFilter()
         {
             courseFilter = new List<int[]> { };
@@ -249,6 +271,9 @@ namespace AutoLearn
             dateTimePicker2.Enabled = false;
 
             isIniting = false;
+
+            // 等待驱动检查完之后再使能
+            button__start.Enabled = false;
         }
         private void Form1_Closing(object sender, FormClosingEventArgs e)
         {
@@ -498,6 +523,8 @@ namespace AutoLearn
 
         private async void Form1_Shown(object sender, EventArgs e)
         {
+            await CheckWebDriver();
+            button__start.Enabled = true;
             await CheckVersion();
         }
 
