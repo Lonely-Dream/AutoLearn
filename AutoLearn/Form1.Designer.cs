@@ -593,7 +593,7 @@ namespace AutoLearn
             dateTimePicker1.Name = "dateTimePicker1";
             dateTimePicker1.Size = new Size(104, 23);
             dateTimePicker1.TabIndex = 6;
-            dateTimePicker1.Value = new DateTime(2022, 9, 15, 0, 0, 0, 0);
+            dateTimePicker1.Value = new DateTime(2024, 9, 13, 0, 0, 0, 0);
             dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
             // 
             // dateTimePicker2
@@ -604,7 +604,7 @@ namespace AutoLearn
             dateTimePicker2.Name = "dateTimePicker2";
             dateTimePicker2.Size = new Size(104, 23);
             dateTimePicker2.TabIndex = 7;
-            dateTimePicker2.Value = new DateTime(2022, 9, 30, 15, 20, 43, 0);
+            dateTimePicker2.Value = new DateTime(2025, 9, 13, 0, 0, 0, 0);
             dateTimePicker2.ValueChanged += dateTimePicker2_ValueChanged;
             // 
             // label5

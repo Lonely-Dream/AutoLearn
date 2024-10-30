@@ -169,10 +169,12 @@ namespace AutoLearn
             }
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/");
             loger.Log("尝试登录");
-            driver.FindElement(By.Id("loginName")).SendKeys(loginName);
-            driver.FindElement(By.Id("password")).SendKeys(password);
+            //driver.FindElement(By.Id("loginName")).SendKeys(loginName);
+            //driver.FindElement(By.Id("password")).SendKeys(password);
             //driver.FindElement(By.ClassName("login_Btn")).Submit();
             //使用原生js辅助登录
+            driver.ExecuteScript($"$('#loginName').val('{loginName}')");
+            driver.ExecuteScript($"$('#password').val('{password}')");
             driver.ExecuteScript("$(\"#continueLogin\").val(true);check();");
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/els/html/index.parser.do?id=NEW_COURSE_CENTER");
             loger.Log("登录成功");
