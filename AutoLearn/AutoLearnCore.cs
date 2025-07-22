@@ -8,9 +8,6 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WebDriverManager;
-using WebDriverManager.DriverConfigs.Impl;
-
 
 namespace AutoLearn
 {
@@ -99,7 +96,15 @@ namespace AutoLearn
         {
             try
             {
-                driver = new ChromeDriver();
+                var options = new ChromeOptions();
+                string userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+                System.IO.Directory.CreateDirectory(userDataDir);
+
+                options.AddArgument($"--user-data-dir={userDataDir}");
+                options.BinaryLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chrome-win64", "chrome.exe");
+
+                var driverPath = AppDomain.CurrentDomain.BaseDirectory;
+                driver = new ChromeDriver(driverPath, options);
                 return;
             }
             catch (DriverServiceNotFoundException e)
