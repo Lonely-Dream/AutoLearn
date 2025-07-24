@@ -11,7 +11,7 @@ namespace AutoLearn
     {
         public static readonly int CF_ROW = 5;
         public static readonly int CF_COL = 4;
-        public static readonly string VERSION = "V0.2.0";
+        public static readonly string VERSION = "V0.2.1";
 
         public static void SetConfig(Configuration configuration, string key, string value)
         {

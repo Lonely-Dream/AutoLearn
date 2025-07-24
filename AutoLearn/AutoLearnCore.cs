@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Support.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -175,6 +176,27 @@ namespace AutoLearn
                 return;
             }
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/");
+
+            // 等待登录输入框加载完成
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait.Until(d =>
+            {
+                try
+                {
+                    var element = d.FindElement(By.Id("loginName"));
+                    if (element.Displayed)
+                    {
+                        element.Click();
+                        return true;
+                    }
+                    return false;
+                }
+                catch (NoSuchElementException)
+                {
+                    return false;
+                }
+            });
+
             loger.Log("尝试登录");
             //driver.FindElement(By.Id("loginName")).SendKeys(loginName);
             //driver.FindElement(By.Id("password")).SendKeys(password);
