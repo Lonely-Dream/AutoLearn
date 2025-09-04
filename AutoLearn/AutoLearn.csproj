@@ -21,6 +21,10 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <CETCompat>false</CETCompat>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="Resources\Autolearn.ico" />
   </ItemGroup>
