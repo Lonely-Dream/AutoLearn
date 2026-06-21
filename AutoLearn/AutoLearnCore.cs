@@ -26,11 +26,14 @@ namespace AutoLearn
         private List<Course> courses;
         public int playSpeed = 1;
 
-        public bool IsRunning { get; set; }
+        public bool DriverIsRun { get; set; }
+        public bool IsLearning { get; set; }
         public AutoLearnCore(Loger loger)
         {
             this.loger = loger ?? throw new ArgumentNullException(nameof(loger));
             driver = null;
+            DriverIsRun = false;
+            IsLearning = false;
             courses = new List<Course>();
             {
                 using StreamReader sr = new StreamReader("JSCodeXHR.js");
@@ -151,10 +154,10 @@ namespace AutoLearn
 
             if (driver == null)
             {
-                IsRunning = false;
+                DriverIsRun = false;
                 return false;
             }
-            IsRunning = true;
+            DriverIsRun = true;
             return true;
         }
         /// <summary>
@@ -167,7 +170,8 @@ namespace AutoLearn
                 driver.Quit();
                 driver = null;
             }
-            IsRunning = false;
+            DriverIsRun = false;
+            IsLearning = false;
         }
         public void Login(string loginName,string password)
         {
@@ -409,7 +413,7 @@ namespace AutoLearn
                             cnt_init++;
                         }
 
-                        if (!IsRunning)
+                        if (!IsLearning)
                         {
                             loger.Log("停止学习");
                             return;//AutoLearnCore 退出
@@ -419,7 +423,7 @@ namespace AutoLearn
                 }
                 catch (Exception e)
                 {
-                    if (!IsRunning)
+                    if (!IsLearning)
                     {
                         break;
                     }

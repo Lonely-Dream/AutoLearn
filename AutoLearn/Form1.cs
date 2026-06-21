@@ -41,7 +41,7 @@ namespace AutoLearn
 
                 foreach (byte b in hashBytes)
                 {
-                    sb.Append(b.ToString("x2")); // ½«Ã¿¸ö×Ö½Ú¸ñÊ½»¯ÎªÁ½Î»µÄÊ®Áù½øÖÆÊı
+                    sb.Append(b.ToString("x2")); // å°†æ¯ä¸ªå­—èŠ‚æ ¼å¼åŒ–ä¸ºä¸¤ä½çš„åå…­è¿›åˆ¶æ•°
                 }
 
                 return sb.ToString();
@@ -78,7 +78,7 @@ namespace AutoLearn
         }
         private async Task CheckVersion()
         {
-            loger.Log("µ±Ç°°æ±¾:" + Config.VERSION);
+            loger.Log("å½“å‰ç‰ˆæœ¬:" + Config.VERSION);
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(textBoxServerURL.Text);
@@ -97,15 +97,15 @@ namespace AutoLearn
                 }
                 else
                 {
-                    throw new Exception("·´ĞòÁĞ»¯Ê§°Ü");
+                    throw new Exception("ååºåˆ—åŒ–å¤±è´¥");
                 }
 
                 if (packInformation.files_number == 0)
                 {
-                    loger.Log("µ±Ç°°æ±¾ÒÑÊÇ×îĞÂ");
+                    loger.Log("å½“å‰ç‰ˆæœ¬å·²æ˜¯æœ€æ–°");
                     return;
                 }
-                loger.Log("×îĞÂ°æ±¾:" + packInformation.version);
+                loger.Log("æœ€æ–°ç‰ˆæœ¬:" + packInformation.version);
                 loger.Log(packInformation.message);
 
                 Thread thread = new(() =>
@@ -117,30 +117,30 @@ namespace AutoLearn
 
                         if (md5 == fileInformation.md5)
                         {
-                            loger.Log(fileInformation.filename + "ÒÑÊÇ×îĞÂ");
+                            loger.Log(fileInformation.filename + "å·²æ˜¯æœ€æ–°");
                         }
                         else
                         {
-                            loger.Log(fileInformation.filename + "¿ªÊ¼¸üĞÂ");
+                            loger.Log(fileInformation.filename + "å¼€å§‹æ›´æ–°");
                             DownloadFile(fileInformation);
                             cnt++;
                         }
                     }
                     if (cnt != 0)
                     {
-                        // ¸üĞÂÍê³É
-                        loger.Log("ÏÂÔØÍê³É");
+                        // æ›´æ–°å®Œæˆ
+                        loger.Log("ä¸‹è½½å®Œæˆ");
 
-                        // ÔÚÕâÀïÌí¼ÓÖØÆô AutoLearn µÄÂß¼­
-                        // µ¯³öÏûÏ¢¿ò
-                        MessageBox.Show(packInformation.message + "\nÏÂÔØÍê³É¼´½«ÖØÆôAutoLearn");
+                        // åœ¨è¿™é‡Œæ·»åŠ é‡å¯ AutoLearn çš„é€»è¾‘
+                        // å¼¹å‡ºæ¶ˆæ¯æ¡†
+                        MessageBox.Show(packInformation.message + "\nä¸‹è½½å®Œæˆå³å°†é‡å¯AutoLearn");
 
-                        // Ö´ĞĞÖØÆô AutoLearn µÄÂß¼­
+                        // æ‰§è¡Œé‡å¯ AutoLearn çš„é€»è¾‘
                         ProcessStartInfo processInfo = new()
                         {
                             FileName = "./update.bat",
-                            CreateNoWindow = true, // ²»´´½¨ÃüÁîÌáÊ¾·û´°¿Ú
-                            UseShellExecute = false // ±ØĞëÎª false
+                            CreateNoWindow = true, // ä¸åˆ›å»ºå‘½ä»¤æç¤ºç¬¦çª—å£
+                            UseShellExecute = false // å¿…é¡»ä¸º false
                         };
                         new Process
                         {
@@ -154,7 +154,7 @@ namespace AutoLearn
             catch (Exception e)
             {
                 loger.Log(e.Message);
-                loger.Log("¼ì²é°æ±¾Ê§°Ü");
+                loger.Log("æ£€æŸ¥ç‰ˆæœ¬å¤±è´¥");
                 packInformation = new()
                 {
                     files_number = 0
@@ -192,19 +192,19 @@ namespace AutoLearn
             loger = new(listBox1);
             learnCore = new(loger);
 
-            // ³õÊ¼»¯¿Î³Ì¹ıÂËÆ÷
+            // åˆå§‹åŒ–è¯¾ç¨‹è¿‡æ»¤å™¨
             courseFilterCheckBox = new CheckBox[Config.CF_ROW, Config.CF_COL];
 
             for (int i = 0; i < Config.CF_ROW; ++i)
             {
                 for (int j = 0; j < Config.CF_COL; ++j)
                 {
-                    Control? controls = Controls.Find(string.Format("cb_cf_{0}{1}", i, j), true).FirstOrDefault() ?? throw new Exception("³õÊ¼»¯¿Î³Ì¹ıÂËÆ÷Ê§°Ü!");
-                    courseFilterCheckBox[i, j] = controls as CheckBox ?? throw new Exception("¿Î³Ì¹ıÂËÆ÷×ª»»Ê§°Ü£¡");
+                    Control? controls = Controls.Find(string.Format("cb_cf_{0}{1}", i, j), true).FirstOrDefault() ?? throw new Exception("åˆå§‹åŒ–è¯¾ç¨‹è¿‡æ»¤å™¨å¤±è´¥!");
+                    courseFilterCheckBox[i, j] = controls as CheckBox ?? throw new Exception("è¯¾ç¨‹è¿‡æ»¤å™¨è½¬æ¢å¤±è´¥ï¼");
                 }
             }
 
-            //¿ªÊ¼¼ÓÔØÅäÖÃ
+            //å¼€å§‹åŠ è½½é…ç½®
             username = Config.GetConfig("username");
             password = Config.GetConfig("password");
             username2 = Config.GetConfig("username2");
@@ -251,14 +251,14 @@ namespace AutoLearn
 
             isIniting = false;
 
-            // µÈ´ıÇı¶¯¼ì²éÍêÖ®ºóÔÙÊ¹ÄÜ
+            // ç­‰å¾…é©±åŠ¨æ£€æŸ¥å®Œä¹‹åå†ä½¿èƒ½
             button__start.Enabled = false;
         }
         private void Form1_Closing(object sender, FormClosingEventArgs e)
         {
             learnCore.Quit();
 
-            //Ğ´ÅäÖÃÏî
+            //å†™é…ç½®é¡¹
             Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             Config.SetConfig(configuration, "username", username);
             Config.SetConfig(configuration, "password", password);
@@ -291,11 +291,11 @@ namespace AutoLearn
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
-                button__start.Text = "Æô¶¯";
+                button__start.Text = "å¯åŠ¨";
                 learnCore.Quit();
-                loger.Log("»á»°½áÊø");
+                loger.Log("ä¼šè¯ç»“æŸ");
                 button2.Enabled = false;
                 button3.Enabled = false;
                 dateTimePicker1.Enabled = false;
@@ -307,8 +307,8 @@ namespace AutoLearn
                 {
                     return;
                 }
-                loger.Log("ÕıÔÚ¼ÓÔØ...");
-                button__start.Text = "Í£Ö¹";
+                loger.Log("æ­£åœ¨åŠ è½½...");
+                button__start.Text = "åœæ­¢";
                 learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
                 button2.Enabled = true;
                 button3.Enabled = true;
@@ -322,21 +322,21 @@ namespace AutoLearn
             button2.Enabled = false;
             if (isStartLearn)
             {
-                button2.Text = "¿ªÊ¼Ñ§Ï°";
+                button2.Text = "å¼€å§‹å­¦ä¹ ";
 
-                learnCore.IsRunning = false;
+                learnCore.IsLearning = false;
                 if (learnThread.ThreadState == System.Threading.ThreadState.Running)
                 {
                     learnThread.Join();
                 }
-                loger.Log("Ïß³ÌÖÕÖ¹");
+                loger.Log("çº¿ç¨‹ç»ˆæ­¢");
 
                 isStartLearn = false;
             }
             else
             {
-                button2.Text = "Í£Ö¹Ñ§Ï°";
-                learnCore.IsRunning = true;
+                button2.Text = "åœæ­¢å­¦ä¹ ";
+                learnCore.IsLearning = true;
 
                 UpdateCourseFilter();
                 learnCore.GetCourseList(courseFilter, checkBoxAutoEvaluate.Checked);
@@ -355,11 +355,11 @@ namespace AutoLearn
         {
             ChromeDriver driver = new();
             driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php");
-            loger.Log("³¢ÊÔµÇÂ¼¹«Ğè¿Î");
+            loger.Log("å°è¯•ç™»å½•å…¬éœ€è¯¾");
             driver.FindElement(By.Id("user")).SendKeys(username2);
             driver.FindElement(By.Id("pass")).SendKeys(password2);
             driver.FindElement(By.Id("submit-btn")).Submit();
-            loger.Log("µÇÂ½³É¹¦");
+            loger.Log("ç™»é™†æˆåŠŸ");
             try
             {
                 Cookie cookie = driver.Manage().Cookies.GetCookieNamed("PHPSESSID");
@@ -367,7 +367,7 @@ namespace AutoLearn
             }
             catch (Exception)
             {
-                loger.Log("£¿");
+                loger.Log("ï¼Ÿ");
             }
             string JSCodeCommonCourse;
             {
@@ -405,37 +405,37 @@ namespace AutoLearn
             for (int i = 0; i < urls.Length; i++)
             {
                 driver.Navigate().GoToUrl(urls[i]);
-                loger.Log(string.Format("µÚ{0}¿ÎÑ§Ï°Íê³É", i + 1));
+                loger.Log(string.Format("ç¬¬{0}è¯¾å­¦ä¹ å®Œæˆ", i + 1));
             }
             driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php?m=Index&a=exam&type=1");
-            loger.Log("¹«Ğè¿ÎÑ§Ï°Íê³É¡£");
+            loger.Log("å…¬éœ€è¯¾å­¦ä¹ å®Œæˆã€‚");
             //driver.Quit();
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
                 float[] ret = learnCore.GetScoreAndPeriod(dateTimePicker1.Text, dateTimePicker2.Text);
-                label5.Text = "Ñ§·Ö£º" + ret[0];
-                label6.Text = "Ñ§Ê±£º" + ret[1];
+                label5.Text = "å­¦åˆ†ï¼š" + ret[0];
+                label6.Text = "å­¦æ—¶ï¼š" + ret[1];
             }
         }
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
                 float[] ret = learnCore.GetScoreAndPeriod(dateTimePicker1.Text, dateTimePicker2.Text);
-                label5.Text = "Ñ§·Ö£º" + ret[0];
-                label6.Text = "Ñ§Ê±£º" + ret[1];
+                label5.Text = "å­¦åˆ†ï¼š" + ret[0];
+                label6.Text = "å­¦æ—¶ï¼š" + ret[1];
             }
         }
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
                 float[] ret = learnCore.GetScoreAndPeriod(dateTimePicker1.Text, dateTimePicker2.Text);
-                label5.Text = "Ñ§·Ö£º" + ret[0];
-                label6.Text = "Ñ§Ê±£º" + ret[1];
+                label5.Text = "å­¦åˆ†ï¼š" + ret[0];
+                label6.Text = "å­¦æ—¶ï¼š" + ret[1];
             }
         }
 
@@ -447,11 +447,11 @@ namespace AutoLearn
             }
             if (checkBox1.Checked)
             {
-                // Ñ¡Ôñ±¶ËÙ²¥·Å ÌáÊ¾ĞÅÏ¢
-                DialogResult result = MessageBox.Show("È·ÈÏÊÇ·ñ¿ªÆô±¶ËÙ²¥·Å£¿²»½¨ÒéµÄ¹¦ÄÜ£¬²»È·¶¨µ¼ÖÂÆäËûÎÊÌâºÍºó¹û£¬ÇëÕå×Ã¡£", "¾¯¸æ", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                // é€‰æ‹©å€é€Ÿæ’­æ”¾ æç¤ºä¿¡æ¯
+                DialogResult result = MessageBox.Show("ç¡®è®¤æ˜¯å¦å¼€å¯å€é€Ÿæ’­æ”¾ï¼Ÿä¸å»ºè®®çš„åŠŸèƒ½ï¼Œä¸ç¡®å®šå¯¼è‡´å…¶ä»–é—®é¢˜å’Œåæœï¼Œè¯·æ–Ÿé…Œã€‚", "è­¦å‘Š", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (result == DialogResult.Yes)
                 {
-                    // È·ÈÏ¿ªÆô
+                    // ç¡®è®¤å¼€å¯
                     numericUpDown1.Enabled = true;
                     numericUpDown1.Value = 4;
                 }
@@ -520,7 +520,7 @@ namespace AutoLearn
 
             //if (row == 4)
             //{
-            //    // ¸ÃĞĞÎªµ¥Ñ¡
+            //    // è¯¥è¡Œä¸ºå•é€‰
             //    if (cb.Checked)
             //    {
             //        for (int j = 0; j < Config.CF_COL; ++j)
@@ -539,10 +539,10 @@ namespace AutoLearn
             //    return;
             //}
 
-            // ÆäËûĞĞ
+            // å…¶ä»–è¡Œ
             if (col == 0)
             {
-                // Ñ¡ÖĞÁËÇ°4ĞĞ µÄall
+                // é€‰ä¸­äº†å‰4è¡Œ çš„all
                 if (cb.Checked)
                 {
                     for (int j = 1; j < Config.CF_COL; ++j)
@@ -557,7 +557,7 @@ namespace AutoLearn
             }
             else
             {
-                // Ñ¡ÖĞÁËÃ¿ĞĞµÄÆäËûµÄ
+                // é€‰ä¸­äº†æ¯è¡Œçš„å…¶ä»–çš„
                 if (cb.Checked)
                 {
                     courseFilterCheckBox[row, 0].Checked = false;
@@ -573,7 +573,7 @@ namespace AutoLearn
 
             if (row == 4)
             {
-                // ¸ÃĞĞÎªµ¥Ñ¡
+                // è¯¥è¡Œä¸ºå•é€‰
                 if (!cb.Checked)
                 {
                     for (int j = 0; j < Config.CF_COL; ++j)
