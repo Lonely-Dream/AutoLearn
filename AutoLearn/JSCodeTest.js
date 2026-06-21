@@ -37,7 +37,7 @@ function getCourseLists(pageSize, queryURL) {
 }
 
 function closeCourse(courseId){
-    var param = "elsSign="+CONFIG.elnSessionId;
+    var param = "elsSign="+window.$cookies.get("eln_session_id");
     var url = "https://sxqc-gbpy.21tb.com/els/html/courseStudyItem/courseStudyItem.exitStudy.do?courseId="+courseId;
     var xhr = new XMLHttpRequest();
     xhr.open("POST",url,false);
@@ -72,24 +72,44 @@ function checkVideoPlay(){
 }
 
 function evaluateCourse(courseId){
-    var td = [
+    // 提交星级评分 GET请求
+    const queryParams1 = {
+        courseId: "8fea90380821be82543e1110f5e6399c",
+        star: 5
+    }
+    $.ajax({
+        type: 'GET',
+        async: false,
+        url: '/els/html/guangsu/studyCourse/saveOnLineCourseStar',
+        data: queryParams1,
+        success: function (d) {
+            console.log(d);
+        }
+    });
+
+    // 提交完整课程评价 POST请求
+    const td = [
         { name: '632857b588ce4711a74c61b356d846ae', value: '68b9000dfe7a401aac40022a0bc7da96' },
         { name: '5d8af955025048aab039906142fef39f', value: '1da11c30ab10462cacb77df9d5797b49' },
         { name: '5f8e4b352ec04f6f9d6c582a506cc79b', value: '259abf2ce5e44b709627efdaa012ba51' },
         { name: '03bd9fe51ca64cf89fcab4dfb1cdce67', value: 'd34fb18e4c334ad79bcee3d56c81d339' },
         { name: 'd6b6f56d5f574cb7bbcf8c1701c05283', value: '1、课程容易理解，不晦涩；\r\n2、讲师逻辑清晰，引导好；\r\n3、平台氛围良好，易学习。' }
     ];
-    var param = {
+    const postBody  = {
         willGoStep: 'COURSE_EVALUATE',
         answers: JSON.stringify(td),
         courseId: courseId,
         courseType: 'NEW_COURSE_CENTER'
     };
+    const queryParams2 ={
+        eln_session_id: window.$cookies.get("eln_session_id"),
+        elsSign: window.$cookies.get("eln_session_id")
+    }
     $.ajax({
         type: 'POST',
         async: false,
-        url: CONFIG.ctx+'html/studyCourse/studyCourse.saveCourseEvaluate.do?eln_session_id='+CONFIG.elnSessionId + "&elsSign=" + CONFIG.elnSessionId,
-        data: param,
+        url: '/els/html/studyCourse/studyCourse.saveCourseEvaluate.do?'+$.param(queryParams2),
+        data: postBody,
         success: function (d) {
             var refret = {
                 "transAmount": "2.0",
@@ -106,23 +126,7 @@ function evaluateCourse(courseId){
 }
 
 function courseExam(courseId,answers){
-    var param = {
-        willGoStep: 'COURSE_EXAM',
-        //answers: JSON.stringify(formData),
-        answers:answers,
-        courseId: info.courseId,
-        examUserId: info.examUserId
-    };
-
-    $.ajax({
-        type: 'POST',
-        async: false,
-        url: '/els/html/studyCourse/studyCourse.saveCourseExam.do?courseType=NEW_COURSE_CENTER&eln_session_id=' + CONFIG.elnSessionId + "&elsSign=" + CONFIG.elnSessionId,
-        data: param,
-        success: function (d) {
-            console.log(d);
-        }
-    });
+    console.log("todo courseExam",courseId,answers);
 }
 
 eval(arguments[0])
