@@ -63,12 +63,7 @@ function checkVideoPlay(){
         closeCourse(courseId);
         callback(-3);
     }
-    var frame = window.frames[0];
-    if(frame === undefined){
-        console.log("frame === undefined");
-        callback(-2);
-    }
-    var video = frame.document.getElementsByTagName("video")[0];
+    var video = document.getElementsByTagName("video")[0];
     if(video === null || video === undefined){
         console.log("video组件未找到");
         callback(-1);

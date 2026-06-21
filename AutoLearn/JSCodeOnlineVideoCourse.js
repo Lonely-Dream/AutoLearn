@@ -1,21 +1,20 @@
 const callback = arguments[arguments.length - 1];
-var frame = window.frames[0];
 
 function learnNextCourse(isNext) {
-    var chapters = frame.document.getElementsByClassName("section");
-    var sectionNumber = 0;
-    for (var i = 0; i < chapters.length; ++i) {
-        sectionNumber +=chapters[i].children.length;
+    var sections = document.getElementsByClassName("section");
+    var sectionItemNumber = 0;
+    for (var i = 0; i < sections.length; ++i) {
+        sectionItemNumber +=sections[i].children.length;
     }
-    console.log("当前课程共有:" + chapters.length + "章",sectionNumber+"节");
-    for (var i = 0; i < chapters.length; ++i) {
-        var sections = chapters[i].children;
-        for (var j = 0; j < sections.length; ++j) {
-            var section = sections[j];
-            console.log(section.getElementsByClassName("section-title")[0].textContent, section.className);
-            if (!section.className.endsWith("finish")) {
+    console.log("当前课程共有:" + sections.length + "章",sectionItemNumber+"节");
+    for (var i = 0; i < sections.length; ++i) {
+        var sectionItems = sections[i].children;
+        for (var j = 0; j < sectionItems.length; ++j) {
+            var sectionItem = sectionItems[j];
+            console.log(sectionItem.textContent, sectionItem.className);
+            if (!sectionItem.classList.contains("finish")) {
                 if (isNext) {
-                    section.click();
+                    sectionItem.click();
                 }
                 return 0;
             }
@@ -28,7 +27,7 @@ function checkVideo() {
     console.log("Check Video");
 
     //检查当前播放小节是否未完成
-    if (frame.document.getElementsByClassName("first-line active")[0].parentElement.className.endsWith("finish")) {
+    if (document.getElementsByClassName("first-line active")[0].parentElement.classList.contains("finish")) {
         //已完成
         //检查章节是否全部学完
         if (learnNextCourse(true) == -1) {
@@ -41,7 +40,7 @@ function checkVideo() {
         }
     }
 
-    var video = frame.document.getElementsByTagName("video")[0];
+    var video = document.getElementsByTagName("video")[0];
     if (video.ended) {
         console.log("当前小节播放完成。")
         return learnNextCourse(true);

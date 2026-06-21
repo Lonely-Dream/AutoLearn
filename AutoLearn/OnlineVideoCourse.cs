@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Chrome;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 
@@ -26,7 +26,7 @@ namespace AutoLearn
         {
             try
             {
-                driver.ExecuteScript("window.frames[0].document.getElementsByTagName('video')[0].playbackRate ="+playSpeed.ToString());
+                driver.ExecuteScript("document.getElementsByTagName('video')[0].playbackRate ="+playSpeed.ToString());
             }
             catch (Exception e)
             {
