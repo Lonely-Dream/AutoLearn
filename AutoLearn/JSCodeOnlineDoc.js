@@ -24,7 +24,7 @@ function checkVideo() {
     }
 
     $.ajax({
-        url: CONFIG.ctx + 'html/courseStudyItem/courseStudyItem.saveCoursePrecent.do',
+        url: 'els/html/courseStudyItem/courseStudyItem.saveCoursePrecent.do',
         type: 'post',
         dataType: 'json',
         async: false,
