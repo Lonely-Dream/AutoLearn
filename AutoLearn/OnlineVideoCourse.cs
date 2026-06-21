@@ -42,7 +42,7 @@ namespace AutoLearn
 
         public override void JumpToCourse(string eln_session_id)
         {
-            string url = string.Format("https://sxqc-gbpy.21tb.com/els/html/courseInfo/courseinfo.checkMsUrl.do?courseId={0}&enterCourseUrl=https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?courseId={1}%26courseType=NEW_COURSE_CENTER%26studyType=STUDY", Id, Id);
+            string url = "https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseId=" + Id;
             string buffer = driver.ExecuteAsyncScript(JSCodeXHR, "get", url).ToString();
             JObject pairs = JObject.Parse(buffer);
             bool success = pairs["success"].Value<bool>();

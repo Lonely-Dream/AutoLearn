@@ -24,6 +24,7 @@ namespace AutoLearn
         private string JSCodeTest;
         private string JSCodeOnlineDoc;
         private List<Course> courses;
+        private string userDataDir;
         public int playSpeed = 1;
 
         public bool DriverIsRun { get; set; }
@@ -101,8 +102,9 @@ namespace AutoLearn
             try
             {
                 var options = new ChromeOptions();
-                string userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+                string userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AutoLearn-"+Path.GetRandomFileName());
                 System.IO.Directory.CreateDirectory(userDataDir);
+                loger.Log("临时用户数据目录：" + userDataDir);
 
                 options.AddArgument($"--user-data-dir={userDataDir}");
                 options.BinaryLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chrome-win64", "chrome.exe");
@@ -170,6 +172,19 @@ namespace AutoLearn
                 driver.Quit();
                 driver = null;
             }
+            // 清理临时用户数据目录
+            if (!string.IsNullOrEmpty(userDataDir) && Directory.Exists(userDataDir))
+            {
+                try
+                {
+                    Directory.Delete(userDataDir, true);
+                    loger.Log("已删除临时用户数据目录：" + userDataDir);
+                }
+                catch (Exception e)
+                {
+                    loger.Log("删除临时用户数据目录失败：" + e.Message);
+                }
+            }
             DriverIsRun = false;
             IsLearning = false;
         }
@@ -182,7 +197,7 @@ namespace AutoLearn
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/");
 
             // 等待登录输入框加载完成
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
             wait.Until(d =>
             {
                 try
@@ -443,9 +458,9 @@ namespace AutoLearn
             }
             try
             {
-                driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?"
-                                      + "courseId=" + courseId
-                                      + "&courseType=NEW_COURSE_CENTER&studyType=STUDY");
+                driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?"
+                                        + "courseType=NEW_COURSE_CENTER&"
+                                        + "courseId=" + courseId);
                 Object ret = driver.ExecuteAsyncScript(JSCodeTest, "evaluateCourse('" + courseId + "')");
                 if (ret == null)
                 {
