@@ -42,25 +42,11 @@ namespace AutoLearn
 
         public override void JumpToCourse(string eln_session_id)
         {
-            string url = "https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseId=" + Id;
-            string buffer = driver.ExecuteAsyncScript(JSCodeXHR, "get", url).ToString();
-            JObject pairs = JObject.Parse(buffer);
-            bool success = pairs["success"].Value<bool>();
-            if (!success)
-            {
-                Log.Error("跳转课程失败," + buffer);
-                return;
-            }
-            string message = pairs["message"].Value<string>();
-            driver.Navigate().GoToUrl(message);
-
-            //driver.Navigate().GoToUrl(
-            //    "https://sxqc-gbpy.21tb.com/els/html/courseStudyItem/courseStudyItem.learn.do?"+
-            //    "courseId="+Id+
-            //    "&courseType=NEW_COURSE_CENTER"+
-            //    "&vb_server=http%3A%2F%2F21tb-video.21tb.com"+
-            //    "&eln_session_id="+ eln_session_id
-            //);
+            // string url = "https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?courseType=NEW_COURSE_CENTER&studyType=STUDY&courseId="+ Id;
+            string url = "https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseType=NEW_COURSE_CENTER&courseId=" + Id;
+            driver.Navigate().GoToUrl(url);
+            Thread.Sleep(1500);
+            driver.Navigate().GoToUrl(url);
         }
 
         public override void CloseCourse()
