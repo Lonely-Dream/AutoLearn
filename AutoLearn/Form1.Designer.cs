@@ -576,6 +576,7 @@ namespace AutoLearn
             // 
             // button4
             // 
+            button4.Enabled = false;
             button4.Location = new Point(733, 192);
             button4.Name = "button4";
             button4.Size = new Size(75, 23);

@@ -423,12 +423,12 @@ namespace AutoLearn
         {
             //CheckEnvironment();
             button__start.Enabled = true;
-            await CheckVersion();
+            // await CheckVersion();
         }
 
         private async void button4_Click(object sender, EventArgs e)
         {
-            await CheckVersion();
+            // await CheckVersion();
         }
 
         private void cb_cf_CheckedChanged(object sender, EventArgs e)
