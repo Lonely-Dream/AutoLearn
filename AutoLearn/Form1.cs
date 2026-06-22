@@ -13,8 +13,6 @@ namespace AutoLearn
         private AutoLearnCore learnCore;
         private string username;
         private string password;
-        private string username2;
-        private string password2;
         private bool isSpeedUp = false;
         private int playSpeed = 1;
         private bool isIniting = true;
@@ -206,8 +204,6 @@ namespace AutoLearn
             //开始加载配置
             username = Config.GetConfig("username");
             password = Config.GetConfig("password");
-            username2 = Config.GetConfig("username2");
-            password2 = Config.GetConfig("password2");
             if (!bool.TryParse(Config.GetConfig("isSpeedUp"), out isSpeedUp))
             {
                 isSpeedUp = false;
@@ -234,8 +230,6 @@ namespace AutoLearn
 
             textBoxUsername.Text = username;
             textBoxPassword.Text = password;
-            textBoxUsername2.Text = username2;
-            textBoxPassword2.Text = password2;
 
             checkBox1.Checked = isSpeedUp;
             numericUpDown1.Value = playSpeed;
@@ -261,8 +255,6 @@ namespace AutoLearn
             Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             Config.SetConfig(configuration, "username", username);
             Config.SetConfig(configuration, "password", password);
-            Config.SetConfig(configuration, "username2", username2);
-            Config.SetConfig(configuration, "password2", password2);
             Config.SetConfig(configuration, "isSpeedUp", isSpeedUp.ToString());
             Config.SetConfig(configuration, "playSpeed", playSpeed.ToString());
 
@@ -348,66 +340,6 @@ namespace AutoLearn
             button2.Enabled = true;
         }
 
-        private void buttonLearnGXK_Click(object sender, EventArgs e)
-        {
-            ChromeDriver driver = new();
-            driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php");
-            Log.Info("尝试登录公需课");
-            driver.FindElement(By.Id("user")).SendKeys(username2);
-            driver.FindElement(By.Id("pass")).SendKeys(password2);
-            driver.FindElement(By.Id("submit-btn")).Submit();
-            Log.Info("登陆成功");
-            try
-            {
-                Cookie cookie = driver.Manage().Cookies.GetCookieNamed("PHPSESSID");
-                Log.Info(cookie.Value);
-            }
-            catch (Exception)
-            {
-                Log.Error("？");
-            }
-            string JSCodeCommonCourse;
-            {
-                using StreamReader sr = new StreamReader("JSCodeCommonCourse.js");
-                JSCodeCommonCourse = sr.ReadToEnd();
-            }
-            Object ret = driver.ExecuteAsyncScript(JSCodeCommonCourse);
-            string[] urls = new string[]{
-                "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=45",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=49",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=50",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=51",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=52",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=62",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=34",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=54",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=55",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=33",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=56",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=13",
-
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=12",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=3",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=1",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=11",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=46",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=47",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=48",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=57",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=58",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=59",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=60",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=61"
-        };
-            for (int i = 0; i < urls.Length; i++)
-            {
-                driver.Navigate().GoToUrl(urls[i]);
-                Log.Info(string.Format("第{0}课学习完成", i + 1));
-            }
-            driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php?m=Index&a=exam&type=1");
-            Log.Info("公需课学习完成。");
-            //driver.Quit();
-        }
         private void button3_Click(object sender, EventArgs e)
         {
             if (learnCore.DriverIsRun)
@@ -485,16 +417,6 @@ namespace AutoLearn
         private void textBoxPassword_TextChanged(object sender, EventArgs e)
         {
             password = textBoxPassword.Text;
-        }
-
-        private void textBoxUsername2_TextChanged(object sender, EventArgs e)
-        {
-            username2 = textBoxUsername2.Text;
-        }
-
-        private void textBoxPassword2_TextChanged(object sender, EventArgs e)
-        {
-            password2 = textBoxPassword2.Text;
         }
 
         private async void Form1_Shown(object sender, EventArgs e)

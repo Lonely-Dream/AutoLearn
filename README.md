@@ -20,6 +20,7 @@ https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseType=NEW_COUR
 2. 修复无法评价课程的问题
 3. 废弃 Edge 浏览器的支持
 4. 修复 online video 课程跳转问题
+5. 废弃公需课相关内容
 
 ## 20260621
 1. 修复2026年online video类型的课程无法学习的问题
