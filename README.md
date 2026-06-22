@@ -1,6 +1,14 @@
 # AutoLearn
+# 参考
+https://googlechromelabs.github.io/chrome-for-testing/
+
 
 # Update
+## 20260621
+1. 修复2026年online video类型的课程无法学习的问题
+2. 修复启停逻辑
+3. 分离参考资料
+
 ## 20250904
 1. 解决 .NET9 默认启用 CET, 在一些不支持的环境下导致 0xC0000602 故障无法启动的问题
 
