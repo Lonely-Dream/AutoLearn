@@ -11,7 +11,6 @@ namespace AutoLearn
     public partial class Form1 : Form
     {
         private AutoLearnCore learnCore;
-        private Loger loger;
         private string username;
         private string password;
         private string username2;
@@ -78,7 +77,7 @@ namespace AutoLearn
         }
         private async Task CheckVersion()
         {
-            loger.Log("当前版本:" + Config.VERSION);
+            Log.Info("当前版本:" + Config.VERSION);
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(textBoxServerURL.Text);
@@ -102,11 +101,11 @@ namespace AutoLearn
 
                 if (packInformation.files_number == 0)
                 {
-                    loger.Log("当前版本已是最新");
+                    Log.Info("当前版本已是最新");
                     return;
                 }
-                loger.Log("最新版本:" + packInformation.version);
-                loger.Log(packInformation.message);
+                Log.Info("最新版本:" + packInformation.version);
+                Log.Info(packInformation.message);
 
                 Thread thread = new(() =>
                 {
@@ -117,11 +116,11 @@ namespace AutoLearn
 
                         if (md5 == fileInformation.md5)
                         {
-                            loger.Log(fileInformation.filename + "已是最新");
+                            Log.Info(fileInformation.filename + "已是最新");
                         }
                         else
                         {
-                            loger.Log(fileInformation.filename + "开始更新");
+                            Log.Info(fileInformation.filename + "开始更新");
                             DownloadFile(fileInformation);
                             cnt++;
                         }
@@ -129,7 +128,7 @@ namespace AutoLearn
                     if (cnt != 0)
                     {
                         // 更新完成
-                        loger.Log("下载完成");
+                        Log.Info("下载完成");
 
                         // 在这里添加重启 AutoLearn 的逻辑
                         // 弹出消息框
@@ -153,8 +152,8 @@ namespace AutoLearn
             }
             catch (Exception e)
             {
-                loger.Log(e.Message);
-                loger.Log("检查版本失败");
+                Log.Error(e.Message);
+                Log.Error("检查版本失败");
                 packInformation = new()
                 {
                     files_number = 0
@@ -189,8 +188,8 @@ namespace AutoLearn
             this.Left = x;
             this.Top = 20;
 
-            loger = new(listBox1);
-            learnCore = new(loger);
+            Log.RegisterTextBox(listBox1);
+            learnCore = new();
 
             // 初始化课程过滤器
             courseFilterCheckBox = new CheckBox[Config.CF_ROW, Config.CF_COL];
@@ -285,8 +284,6 @@ namespace AutoLearn
             Config.SetConfig(configuration, "courseFilter", string.Join(",", courseFilterStates));
 
             configuration.Save();
-
-            loger.Save();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -295,7 +292,7 @@ namespace AutoLearn
             {
                 button__start.Text = "启动";
                 learnCore.Quit();
-                loger.Log("会话结束");
+                Log.Info("会话结束");
                 button2.Enabled = false;
                 button3.Enabled = false;
                 dateTimePicker1.Enabled = false;
@@ -307,7 +304,7 @@ namespace AutoLearn
                 {
                     return;
                 }
-                loger.Log("正在加载...");
+                Log.Info("正在加载...");
                 button__start.Text = "停止";
                 learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
                 button2.Enabled = true;
@@ -329,7 +326,7 @@ namespace AutoLearn
                 {
                     learnThread.Join();
                 }
-                loger.Log("线程终止");
+                Log.Info("线程终止");
 
                 isStartLearn = false;
             }
@@ -355,19 +352,19 @@ namespace AutoLearn
         {
             ChromeDriver driver = new();
             driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php");
-            loger.Log("尝试登录公需课");
+            Log.Info("尝试登录公需课");
             driver.FindElement(By.Id("user")).SendKeys(username2);
             driver.FindElement(By.Id("pass")).SendKeys(password2);
             driver.FindElement(By.Id("submit-btn")).Submit();
-            loger.Log("登陆成功");
+            Log.Info("登陆成功");
             try
             {
                 Cookie cookie = driver.Manage().Cookies.GetCookieNamed("PHPSESSID");
-                loger.Log(cookie.Value);
+                Log.Info(cookie.Value);
             }
             catch (Exception)
             {
-                loger.Log("？");
+                Log.Error("？");
             }
             string JSCodeCommonCourse;
             {
@@ -405,10 +402,10 @@ namespace AutoLearn
             for (int i = 0; i < urls.Length; i++)
             {
                 driver.Navigate().GoToUrl(urls[i]);
-                loger.Log(string.Format("第{0}课学习完成", i + 1));
+                Log.Info(string.Format("第{0}课学习完成", i + 1));
             }
             driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php?m=Index&a=exam&type=1");
-            loger.Log("公需课学习完成。");
+            Log.Info("公需课学习完成。");
             //driver.Quit();
         }
         private void button3_Click(object sender, EventArgs e)

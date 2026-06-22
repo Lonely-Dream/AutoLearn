@@ -4,6 +4,9 @@ https://googlechromelabs.github.io/chrome-for-testing/
 
 
 # Update
+## 20260622
+1. 重构日志模块，优化使用方式
+
 ## 20260621
 1. 修复2026年online video类型的课程无法学习的问题
 2. 修复启停逻辑
