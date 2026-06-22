@@ -22,6 +22,7 @@ https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseType=NEW_COUR
 4. 修复 online video 课程跳转问题
 5. 废弃公需课相关内容
 6. 禁止更新检查
+7. 优化课程跳转，引入磁盘缓存
 
 ## 20260621
 1. 修复2026年online video类型的课程无法学习的问题

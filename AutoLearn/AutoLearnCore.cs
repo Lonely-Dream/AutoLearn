@@ -23,6 +23,11 @@ namespace AutoLearn
         private string JSCodeOnlineDoc;
         private List<Course> courses;
         private string userDataDir;
+        private string diskCacheDir;
+        /// <summary>
+        /// 磁盘缓存大小 Byte
+        /// </summary>
+        private readonly long diskCacheSize = 1024 * 1024 * 1024;
         public int playSpeed = 1;
         private string elnSessionId;
 
@@ -100,11 +105,16 @@ namespace AutoLearn
             try
             {
                 var options = new ChromeOptions();
-                string userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AutoLearn-"+Path.GetRandomFileName());
+                userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AutoLearn-"+Path.GetRandomFileName());
                 System.IO.Directory.CreateDirectory(userDataDir);
                 Log.Info("临时用户数据目录：" + userDataDir);
+                diskCacheDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AutoLearnCache");
+                System.IO.Directory.CreateDirectory(diskCacheDir);
+                Log.Info($"磁盘缓存大小：{diskCacheSize / 1024 / 1024}MB 缓存目录：{diskCacheDir}");
 
                 options.AddArgument($"--user-data-dir={userDataDir}");
+                options.AddArgument($"--disk-cache-dir={diskCacheDir}");
+                options.AddArgument($"--disk-cache-size={diskCacheSize}");
                 //options.AddArgument(@"--load-extension=D:\CSharp\AutoLearn\cdn-injector");
                 options.BinaryLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chrome-win64", "chrome.exe");
 
@@ -339,6 +349,13 @@ namespace AutoLearn
             if(driver == null)
             {
                 return;
+            }
+            if (courses.Count > 1)
+            {
+                // 先访问一次课程播放页面,进行资源缓存
+                Course course = courses[0];
+                course.JumpToCourse(elnSessionId);
+                Thread.Sleep(2000);
             }
             for (int i = 0; i < courses.Count; )
             {

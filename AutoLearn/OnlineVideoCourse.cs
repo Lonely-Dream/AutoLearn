@@ -45,8 +45,6 @@ namespace AutoLearn
             // string url = "https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?courseType=NEW_COURSE_CENTER&studyType=STUDY&courseId="+ Id;
             string url = "https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseType=NEW_COURSE_CENTER&courseId=" + Id;
             driver.Navigate().GoToUrl(url);
-            Thread.Sleep(1500);
-            driver.Navigate().GoToUrl(url);
         }
 
         public override void CloseCourse()
