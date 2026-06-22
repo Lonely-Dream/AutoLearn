@@ -386,8 +386,13 @@ namespace AutoLearn
                             result = 1;
                             break;
                         }
-                    } while (true);
-                    if(result == 1 || result == -3)
+                    } while (IsLearning);
+                    if (!IsLearning)
+                    {
+                        Log.Info("停止学习");
+                        return;//AutoLearnCore 退出
+                    }
+                    if (result == 1 || result == -3)
                     {
                         Log.Info("重新加载该课程。");
                         continue;
