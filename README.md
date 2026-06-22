@@ -2,10 +2,16 @@
 # 参考
 https://googlechromelabs.github.io/chrome-for-testing/
 
+https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_{major_version}
+
+https://storage.googleapis.com/chrome-for-testing-public/{full_version}/win64/chrome-win64.zip
+https://storage.googleapis.com/chrome-for-testing-public/{full_version}/win64/chromedriver-win64.zip
 
 # Update
 ## 20260622
 1. 重构日志模块，优化使用方式
+2. 修复无法评价课程的问题
+3. 废弃 Edge 浏览器的支持
 
 ## 20260621
 1. 修复2026年online video类型的课程无法学习的问题

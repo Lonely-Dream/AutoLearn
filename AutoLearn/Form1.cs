@@ -286,7 +286,7 @@ namespace AutoLearn
             configuration.Save();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             if (learnCore.DriverIsRun)
             {
@@ -306,7 +306,7 @@ namespace AutoLearn
                 }
                 Log.Info("正在加载...");
                 button__start.Text = "停止";
-                learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
+                await learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
                 button2.Enabled = true;
                 button3.Enabled = true;
                 dateTimePicker1.Enabled = true;

@@ -71,7 +71,7 @@ function checkVideoPlay(){
     callback(0);
 }
 
-function evaluateCourse(courseId){
+function evaluateCourse(courseId, elnSessionId){
     // 提交星级评分 GET请求
     const queryParams1 = {
         courseId: "8fea90380821be82543e1110f5e6399c",
@@ -83,7 +83,7 @@ function evaluateCourse(courseId){
         url: '/els/html/guangsu/studyCourse/saveOnLineCourseStar',
         data: queryParams1,
         success: function (d) {
-            console.log(d);
+            console.log("Star rating response:", d);
         }
     });
 
@@ -102,8 +102,8 @@ function evaluateCourse(courseId){
         courseType: 'NEW_COURSE_CENTER'
     };
     const queryParams2 ={
-        eln_session_id: window.$cookies.get("eln_session_id"),
-        elsSign: window.$cookies.get("eln_session_id")
+        eln_session_id: elnSessionId,
+        elsSign: elnSessionId
     }
     $.ajax({
         type: 'POST',
@@ -120,6 +120,7 @@ function evaluateCourse(courseId){
                 "state": "true",
                 "dimLabel": "成长值"
             };
+            console.log("Course evaluation response:", d);
             callback(JSON.stringify(d));
         }
     });

@@ -14,7 +14,6 @@ namespace AutoLearn
 {
     internal class AutoLearnCore
     {
-        //private ChromeDriver? driver;
         private WebDriver? driver;
         private string JSCodeXHR;
         private string JSCodeOnlineVideoCourse;
@@ -25,6 +24,7 @@ namespace AutoLearn
         private List<Course> courses;
         private string userDataDir;
         public int playSpeed = 1;
+        private string elnSessionId;
 
         public bool DriverIsRun { get; set; }
         public bool IsLearning { get; set; }
@@ -105,6 +105,7 @@ namespace AutoLearn
                 Log.Info("临时用户数据目录：" + userDataDir);
 
                 options.AddArgument($"--user-data-dir={userDataDir}");
+                //options.AddArgument(@"--load-extension=D:\CSharp\AutoLearn\cdn-injector");
                 options.BinaryLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chrome-win64", "chrome.exe");
 
                 var driverPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -120,23 +121,6 @@ namespace AutoLearn
             {
                 Log.Error(e.Message);
                 Log.Error("Chrome Driver版本不兼容，请自行更新或联系开发者");
-            }
-            catch (Exception e)
-            {
-                Log.Error(e.Message);
-                Log.Error("未定义故障");
-            }
-
-            Log.Info("尝试启动Edge浏览器");
-            try
-            {
-                driver = new EdgeDriver();
-                return;
-            }
-            catch (DriverServiceNotFoundException e)
-            {
-                Log.Error(e.Message);
-                Log.Error("Edge Driver未找到，请自行下载或联系开发者");
             }
             catch (Exception e)
             {
@@ -186,7 +170,7 @@ namespace AutoLearn
             DriverIsRun = false;
             IsLearning = false;
         }
-        public void Login(string loginName,string password)
+        public async Task Login(string loginName,string password)
         {
             if(driver == null)
             {
@@ -225,8 +209,8 @@ namespace AutoLearn
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/els/html/index.parser.do?id=NEW_COURSE_CENTER");
             Log.Info("登录成功");
             Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
-            Log.Info(cookie.Name);
-            Log.Info(cookie.Value);
+            elnSessionId = cookie.Value;
+            Log.Info(($"{cookie.Name}={cookie.Value}"));
         }
         public void GetCourseList(List<int[]> courseFilters, bool isEvalution)
         {
@@ -234,9 +218,6 @@ namespace AutoLearn
             {
                 return;
             }
-            Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
-            Log.Info(cookie.Name);
-            Log.Info(cookie.Value);
 
             string queryURL = GenerateQueryURL(courseFilters);
             Log.Info(queryURL);
@@ -359,7 +340,6 @@ namespace AutoLearn
             {
                 return;
             }
-            Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
             for (int i = 0; i < courses.Count; )
             {
                 Course course = courses[i];
@@ -369,7 +349,7 @@ namespace AutoLearn
                 try
                 {
                     Log.Info("尝试跳转到下一门课程");
-                    course.JumpToCourse(cookie.Value);
+                    course.JumpToCourse(elnSessionId);
                     Int64 result;
                     int countRetry = 1;
                     const int MaxRetry = 30;
@@ -459,7 +439,8 @@ namespace AutoLearn
                 driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?"
                                         + "courseType=NEW_COURSE_CENTER&"
                                         + "courseId=" + courseId);
-                Object ret = driver.ExecuteAsyncScript(JSCodeTest, "evaluateCourse('" + courseId + "')");
+                string cmd = $"evaluateCourse('{courseId}','{elnSessionId}');";
+                Object ret = driver.ExecuteAsyncScript(JSCodeTest, cmd);
                 if (ret == null)
                 {
                     Log.Error("评价失败：" + courseId);
