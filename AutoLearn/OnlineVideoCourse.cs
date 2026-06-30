@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Chrome;
 using Newtonsoft.Json.Linq;
 using OpenQA.Selenium;
 
@@ -8,8 +8,8 @@ namespace AutoLearn
     {
         public OnlineVideoCourse(string id, string name, float score, 
             float period, string code, string stepToGetScore,
-            WebDriver driver, Loger loger, string checkCode, string XHRCode) 
-            : base(id, driver, loger,checkCode,XHRCode)
+            WebDriver driver, string checkCode, string XHRCode) 
+            : base(id, driver, checkCode, XHRCode)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Score = score;
@@ -17,8 +17,8 @@ namespace AutoLearn
             Code = code ?? throw new ArgumentNullException(nameof(code));
             StepToGetScore = stepToGetScore ?? throw new ArgumentNullException(nameof(stepToGetScore));
         }
-        public OnlineVideoCourse(string id,ChromeDriver driver, Loger loger, string checkCode, string XHRCode) 
-            : base(id, driver, loger, checkCode, XHRCode)
+        public OnlineVideoCourse(string id,ChromeDriver driver, string checkCode, string XHRCode) 
+            : base(id, driver, checkCode, XHRCode)
         {
             ;
         }
@@ -26,11 +26,11 @@ namespace AutoLearn
         {
             try
             {
-                driver.ExecuteScript("window.frames[0].document.getElementsByTagName('video')[0].playbackRate ="+playSpeed.ToString());
+                driver.ExecuteScript("document.getElementsByTagName('video')[0].playbackRate ="+playSpeed.ToString());
             }
             catch (Exception e)
             {
-                loger.Log(e.Message);
+                Log.Error(e.Message);
             }
             Object ret = driver.ExecuteAsyncScript(JSCodeCourse, "checkVideo()");
             if(ret != null)
@@ -42,25 +42,9 @@ namespace AutoLearn
 
         public override void JumpToCourse(string eln_session_id)
         {
-            string url = string.Format("https://sxqc-gbpy.21tb.com/els/html/courseInfo/courseinfo.checkMsUrl.do?courseId={0}&enterCourseUrl=https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?courseId={1}%26courseType=NEW_COURSE_CENTER%26studyType=STUDY", Id, Id);
-            string buffer = driver.ExecuteAsyncScript(JSCodeXHR, "get", url).ToString();
-            JObject pairs = JObject.Parse(buffer);
-            bool success = pairs["success"].Value<bool>();
-            if (!success)
-            {
-                loger.Log("跳转课程失败," + buffer);
-                return;
-            }
-            string message = pairs["message"].Value<string>();
-            driver.Navigate().GoToUrl(message);
-
-            //driver.Navigate().GoToUrl(
-            //    "https://sxqc-gbpy.21tb.com/els/html/courseStudyItem/courseStudyItem.learn.do?"+
-            //    "courseId="+Id+
-            //    "&courseType=NEW_COURSE_CENTER"+
-            //    "&vb_server=http%3A%2F%2F21tb-video.21tb.com"+
-            //    "&eln_session_id="+ eln_session_id
-            //);
+            // string url = "https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?courseType=NEW_COURSE_CENTER&studyType=STUDY&courseId="+ Id;
+            string url = "https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?courseType=NEW_COURSE_CENTER&courseId=" + Id;
+            driver.Navigate().GoToUrl(url);
         }
 
         public override void CloseCourse()

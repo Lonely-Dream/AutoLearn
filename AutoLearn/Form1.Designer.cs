@@ -68,12 +68,6 @@ namespace AutoLearn
             cb_cf_00 = new CheckBox();
             label11 = new Label();
             button2 = new Button();
-            groupBox2 = new GroupBox();
-            buttonLearnGXK = new Button();
-            label3 = new Label();
-            textBoxPassword2 = new TextBox();
-            label4 = new Label();
-            textBoxUsername2 = new TextBox();
             dateTimePicker1 = new DateTimePicker();
             dateTimePicker2 = new DateTimePicker();
             label5 = new Label();
@@ -83,14 +77,11 @@ namespace AutoLearn
             button4 = new Button();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
-            tabPage2 = new TabPage();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             groupBox3.SuspendLayout();
-            groupBox2.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
-            tabPage2.SuspendLayout();
             SuspendLayout();
             // 
             // button__start
@@ -107,7 +98,6 @@ namespace AutoLearn
             // 
             listBox1.FormattingEnabled = true;
             listBox1.HorizontalScrollbar = true;
-            listBox1.ItemHeight = 17;
             listBox1.Location = new Point(8, 220);
             listBox1.Name = "listBox1";
             listBox1.ScrollAlwaysVisible = true;
@@ -526,65 +516,6 @@ namespace AutoLearn
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
-            // groupBox2
-            // 
-            groupBox2.Controls.Add(buttonLearnGXK);
-            groupBox2.Controls.Add(label3);
-            groupBox2.Controls.Add(textBoxPassword2);
-            groupBox2.Controls.Add(label4);
-            groupBox2.Controls.Add(textBoxUsername2);
-            groupBox2.Location = new Point(6, 6);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(288, 105);
-            groupBox2.TabIndex = 5;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "公需课设置";
-            // 
-            // buttonLearnGXK
-            // 
-            buttonLearnGXK.Location = new Point(196, 54);
-            buttonLearnGXK.Name = "buttonLearnGXK";
-            buttonLearnGXK.Size = new Size(86, 23);
-            buttonLearnGXK.TabIndex = 4;
-            buttonLearnGXK.Text = "学习公需课";
-            buttonLearnGXK.UseVisualStyleBackColor = true;
-            buttonLearnGXK.Click += buttonLearnGXK_Click;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(6, 56);
-            label3.Name = "label3";
-            label3.Size = new Size(44, 17);
-            label3.TabIndex = 3;
-            label3.Text = "密码：";
-            // 
-            // textBoxPassword2
-            // 
-            textBoxPassword2.Location = new Point(56, 53);
-            textBoxPassword2.Name = "textBoxPassword2";
-            textBoxPassword2.PasswordChar = '*';
-            textBoxPassword2.Size = new Size(100, 23);
-            textBoxPassword2.TabIndex = 2;
-            textBoxPassword2.TextChanged += textBoxPassword2_TextChanged;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(6, 27);
-            label4.Name = "label4";
-            label4.Size = new Size(44, 17);
-            label4.TabIndex = 1;
-            label4.Text = "账号：";
-            // 
-            // textBoxUsername2
-            // 
-            textBoxUsername2.Location = new Point(56, 24);
-            textBoxUsername2.Name = "textBoxUsername2";
-            textBoxUsername2.Size = new Size(226, 23);
-            textBoxUsername2.TabIndex = 0;
-            textBoxUsername2.TextChanged += textBoxUsername2_TextChanged;
-            // 
             // dateTimePicker1
             // 
             dateTimePicker1.CustomFormat = "yyyy-MM-dd";
@@ -645,6 +576,7 @@ namespace AutoLearn
             // 
             // button4
             // 
+            button4.Enabled = false;
             button4.Location = new Point(733, 192);
             button4.Name = "button4";
             button4.Size = new Size(75, 23);
@@ -656,7 +588,6 @@ namespace AutoLearn
             // tabControl1
             // 
             tabControl1.Controls.Add(tabPage1);
-            tabControl1.Controls.Add(tabPage2);
             tabControl1.Location = new Point(8, 8);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
@@ -682,17 +613,6 @@ namespace AutoLearn
             tabPage1.TabIndex = 0;
             tabPage1.Text = "专业课";
             // 
-            // tabPage2
-            // 
-            tabPage2.BackColor = SystemColors.Control;
-            tabPage2.Controls.Add(groupBox2);
-            tabPage2.Location = new Point(4, 26);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(792, 150);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "公需课";
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -713,12 +633,9 @@ namespace AutoLearn
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
-            groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
-            tabPage2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -734,12 +651,6 @@ namespace AutoLearn
         private TextBox textBoxUsername;
         private Button button2;
         private CheckBox checkBoxAutoEvaluate;
-        private GroupBox groupBox2;
-        private Button buttonLearnGXK;
-        private Label label3;
-        private TextBox textBoxPassword2;
-        private Label label4;
-        private TextBox textBoxUsername2;
         private DateTimePicker dateTimePicker1;
         private DateTimePicker dateTimePicker2;
         private Label label5;
@@ -776,7 +687,6 @@ namespace AutoLearn
         private Label label11;
         private TabControl tabControl1;
         private TabPage tabPage1;
-        private TabPage tabPage2;
         private CheckBox cb_cf_43;
     }
 }

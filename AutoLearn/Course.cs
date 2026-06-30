@@ -36,15 +36,14 @@ namespace AutoLearn
         public string StepToGetScore { get; set; }
         
         public WebDriver driver;
-        public Loger loger;
+        
         protected string JSCodeCourse;
         protected string JSCodeXHR;
 
-        protected Course(string id, WebDriver driver, Loger loger, string checkCode, string XHRCode)
+        protected Course(string id, WebDriver driver, string checkCode, string XHRCode)
         {
             Id = id ?? throw new ArgumentNullException(nameof(id));
             this.driver = driver ?? throw new ArgumentNullException(nameof(driver));
-            this.loger = loger;
             this.JSCodeCourse = checkCode;
             this.JSCodeXHR = XHRCode;
         }

@@ -14,9 +14,7 @@ namespace AutoLearn
 {
     internal class AutoLearnCore
     {
-        //private ChromeDriver? driver;
         private WebDriver? driver;
-        private Loger loger;
         private string JSCodeXHR;
         private string JSCodeOnlineVideoCourse;
         private string JSCodeTwoScreenCourse;
@@ -24,13 +22,22 @@ namespace AutoLearn
         private string JSCodeTest;
         private string JSCodeOnlineDoc;
         private List<Course> courses;
+        private string userDataDir;
+        private string diskCacheDir;
+        /// <summary>
+        /// 磁盘缓存大小 Byte
+        /// </summary>
+        private readonly long diskCacheSize = 1024 * 1024 * 1024;
         public int playSpeed = 1;
+        private string elnSessionId;
 
-        public bool IsRunning { get; set; }
-        public AutoLearnCore(Loger loger)
+        public bool DriverIsRun { get; set; }
+        public bool IsLearning { get; set; }
+        public AutoLearnCore()
         {
-            this.loger = loger ?? throw new ArgumentNullException(nameof(loger));
             driver = null;
+            DriverIsRun = false;
+            IsLearning = false;
             courses = new List<Course>();
             {
                 using StreamReader sr = new StreamReader("JSCodeXHR.js");
@@ -98,10 +105,17 @@ namespace AutoLearn
             try
             {
                 var options = new ChromeOptions();
-                string userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+                userDataDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AutoLearn-"+Path.GetRandomFileName());
                 System.IO.Directory.CreateDirectory(userDataDir);
+                Log.Info("临时用户数据目录：" + userDataDir);
+                diskCacheDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "AutoLearnCache");
+                System.IO.Directory.CreateDirectory(diskCacheDir);
+                Log.Info($"磁盘缓存大小：{diskCacheSize / 1024 / 1024}MB 缓存目录：{diskCacheDir}");
 
                 options.AddArgument($"--user-data-dir={userDataDir}");
+                options.AddArgument($"--disk-cache-dir={diskCacheDir}");
+                options.AddArgument($"--disk-cache-size={diskCacheSize}");
+                //options.AddArgument(@"--load-extension=D:\CSharp\AutoLearn\cdn-injector");
                 options.BinaryLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "chrome-win64", "chrome.exe");
 
                 var driverPath = AppDomain.CurrentDomain.BaseDirectory;
@@ -110,35 +124,18 @@ namespace AutoLearn
             }
             catch (DriverServiceNotFoundException e)
             {
-                loger.Log(e.Message);
-                loger.Log("Chrome Driver未找到，请自行下载或联系开发者");
+                Log.Error(e.Message);
+                Log.Error("Chrome Driver未找到，请自行下载或联系开发者");
             }
             catch (InvalidOperationException e)
             {
-                loger.Log(e.Message);
-                loger.Log("Chrome Driver版本不兼容，请自行更新或联系开发者");
+                Log.Error(e.Message);
+                Log.Error("Chrome Driver版本不兼容，请自行更新或联系开发者");
             }
             catch (Exception e)
             {
-                loger.Log(e.Message);
-                loger.Log("未定义故障");
-            }
-
-            loger.Log("尝试启动Edge浏览器");
-            try
-            {
-                driver = new EdgeDriver();
-                return;
-            }
-            catch (DriverServiceNotFoundException e)
-            {
-                loger.Log(e.Message);
-                loger.Log("Edge Driver未找到，请自行下载或联系开发者");
-            }
-            catch (Exception e)
-            {
-                loger.Log(e.Message);
-                loger.Log("未定义故障");
+                Log.Error(e.Message);
+                Log.Error("未定义故障");
             }
             driver = null;
         }
@@ -151,10 +148,10 @@ namespace AutoLearn
 
             if (driver == null)
             {
-                IsRunning = false;
+                DriverIsRun = false;
                 return false;
             }
-            IsRunning = true;
+            DriverIsRun = true;
             return true;
         }
         /// <summary>
@@ -167,9 +164,23 @@ namespace AutoLearn
                 driver.Quit();
                 driver = null;
             }
-            IsRunning = false;
+            // 清理临时用户数据目录
+            if (!string.IsNullOrEmpty(userDataDir) && Directory.Exists(userDataDir))
+            {
+                try
+                {
+                    Directory.Delete(userDataDir, true);
+                    Log.Info("已删除临时用户数据目录：" + userDataDir);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("删除临时用户数据目录失败：" + e.Message);
+                }
+            }
+            DriverIsRun = false;
+            IsLearning = false;
         }
-        public void Login(string loginName,string password)
+        public async Task Login(string loginName,string password)
         {
             if(driver == null)
             {
@@ -178,7 +189,7 @@ namespace AutoLearn
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/");
 
             // 等待登录输入框加载完成
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
             wait.Until(d =>
             {
                 try
@@ -197,7 +208,7 @@ namespace AutoLearn
                 }
             });
 
-            loger.Log("尝试登录");
+            Log.Info("尝试登录");
             //driver.FindElement(By.Id("loginName")).SendKeys(loginName);
             //driver.FindElement(By.Id("password")).SendKeys(password);
             //driver.FindElement(By.ClassName("login_Btn")).Submit();
@@ -206,10 +217,10 @@ namespace AutoLearn
             driver.ExecuteScript($"$('#password').val('{password}')");
             driver.ExecuteScript("$(\"#continueLogin\").val(true);check();");
             driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/els/html/index.parser.do?id=NEW_COURSE_CENTER");
-            loger.Log("登录成功");
+            Log.Info("登录成功");
             Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
-            loger.Log(cookie.Name);
-            loger.Log(cookie.Value);
+            elnSessionId = cookie.Value;
+            Log.Info(($"{cookie.Name}={cookie.Value}"));
         }
         public void GetCourseList(List<int[]> courseFilters, bool isEvalution)
         {
@@ -217,12 +228,9 @@ namespace AutoLearn
             {
                 return;
             }
-            Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
-            loger.Log(cookie.Name);
-            loger.Log(cookie.Value);
 
             string queryURL = GenerateQueryURL(courseFilters);
-            loger.Log(queryURL);
+            Log.Info(queryURL);
 
             //获取待学习课程 第一次访问
             string buffer = (string)driver.ExecuteAsyncScript(JSCodeTest, 
@@ -250,91 +258,91 @@ namespace AutoLearn
 
                 if (courseStandard == null)
                 {
-                    loger.Log("读取课程类型错误。");
+                    Log.Error("读取课程类型错误。");
                     continue;
                 }
                 if (limited)
                 {
-                    loger.Log(courseName + " 受限课程，将跳过。");
+                    Log.Info(courseName + " 受限课程，将跳过。");
                     continue;
                 }
                 if(currentStep == "COURSE_EVALUATE")
                 {
-                    loger.Log("待评价：" + courseName + " 类型：" + courseStandard);
+                    Log.Info("待评价：" + courseName + " 类型：" + courseStandard);
                     if (isEvalution)
                     {
                         EvalutionCourse(courseId);
                     }
                     else
                     {
-                        loger.Log("评价被关闭。");
+                        Log.Info("评价被关闭。");
                     }
                 }
                 else if(currentStep == "COURSE_COURSE_STUDY")
                 {
                     if (courseStandard == "ONLINEVIDEOCOURSE")
                     {
-                        loger.Log(courseName);
+                        Log.Info(courseName + " ONLINEVIDEOCOURSE");
                         courses.Add(
                             new OnlineVideoCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeOnlineVideoCourse, JSCodeXHR)
+                            driver, JSCodeOnlineVideoCourse, JSCodeXHR)
                         );
                     }
                     else if (courseStandard == "ONLINEDOC")
                     {
-                        loger.Log(courseName + " ONLINEDOC");
+                        Log.Info(courseName + " ONLINEDOC");
                         courses.Add(
                             new OnlineDocCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeOnlineDoc, JSCodeXHR)
+                            driver, JSCodeOnlineDoc, JSCodeXHR)
                         );
                     }
                     else if (courseStandard == "ONESCREEN")
                     {
-                        loger.Log(courseName + " ONESCREEN");
+                        Log.Info(courseName + " ONESCREEN");
                         courses.Add(
                             new OneScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeOneScreenCourse, JSCodeXHR)
+                            driver, JSCodeOneScreenCourse, JSCodeXHR)
                         );
                     }
                     else if (courseStandard == "TWOSCREEN")
                     {
-                        loger.Log(courseName+ " TWOSCREEN");
+                        Log.Info(courseName+ " TWOSCREEN");
                         courses.Add(
                             new TwoScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeTwoScreenCourse, JSCodeXHR)
+                            driver, JSCodeTwoScreenCourse, JSCodeXHR)
                         );
                     }
                     else if (courseStandard == "THREESCREEN")
                     {
-                        loger.Log(courseName+ " THREESCREEN");
+                        Log.Info(courseName+ " THREESCREEN");
                         courses.Add(
                             new TwoScreenCourse(courseId, courseName, shouldGetScore,
                             coursePeriod, courseCode, stepToGetScore,
-                            driver, loger, JSCodeTwoScreenCourse, JSCodeXHR)
+                            driver, JSCodeTwoScreenCourse, JSCodeXHR)
                         );
                     }
                     else
                     {
-                        loger.Log("暂时不支持：" + courseName + " 类型：" + courseStandard);
+                        Log.Error("暂时不支持：" + courseName + " 类型：" + courseStandard);
                     }
                 }
                 else if(currentStep == "COURSE_EXAM")
                 {
                     ++cntExam;
-                    loger.Log(courseName + " 需要进行考试");
+                    Log.Info(courseName + " 需要进行考试");
                 }
                 else
                 {
-                    loger.Log(courseName + " 处于：" + currentStep);
+                    Log.Info(courseName + " 处于：" + currentStep);
                 }
             }
-            loger.Log("当前筛选下的课程总数:" + totalCourse.ToString());
-            loger.Log("待考试课程数:" + cntExam.ToString());
-            loger.Log("待学习课程数:" + courses.Count.ToString());
+            Log.Info("当前筛选下的课程总数:" + totalCourse.ToString());
+            Log.Info("待考试课程数:" + cntExam.ToString());
+            Log.Info("待学习课程数:" + courses.Count.ToString());
         }
         public void Learn()
         {
@@ -342,7 +350,13 @@ namespace AutoLearn
             {
                 return;
             }
-            Cookie cookie = driver.Manage().Cookies.GetCookieNamed("eln_session_id");
+            if (courses.Count > 1)
+            {
+                // 先访问一次课程播放页面,进行资源缓存
+                Course course = courses[0];
+                course.JumpToCourse(elnSessionId);
+                Thread.Sleep(2000);
+            }
             for (int i = 0; i < courses.Count; )
             {
                 Course course = courses[i];
@@ -351,8 +365,8 @@ namespace AutoLearn
 
                 try
                 {
-                    loger.Log("尝试跳转到下一门课程");
-                    course.JumpToCourse(cookie.Value);
+                    Log.Info("尝试跳转到下一门课程");
+                    course.JumpToCourse(elnSessionId);
                     Int64 result;
                     int countRetry = 1;
                     const int MaxRetry = 30;
@@ -365,37 +379,42 @@ namespace AutoLearn
                         }
                         else if(result == -1)
                         {
-                            loger.Log("video组件未找到");
+                            Log.Info("video组件未找到");
                         }
                         else if(result == -2)
                         {
-                            loger.Log("frame未加载完成");
+                            Log.Info("frame未加载完成");
                         }
                         else if(result == -3)
                         {
-                            loger.Log("有课程正在学习中，尝试终止它。");
+                            Log.Info("有课程正在学习中，尝试终止它。");
                             Thread.Sleep(2000);
                             break;
                         }
                         else
                         {
-                            loger.Log("未知错误。");
+                            Log.Error("未知错误。");
                         }
 
-                        loger.Log(String.Format("Loding... {0}/{1}", countRetry++, MaxRetry));
+                        Log.Info(String.Format("Loding... {0}/{1}", countRetry++, MaxRetry));
                         Thread.Sleep(1000);
                         if(countRetry == MaxRetry)
                         {
                             result = 1;
                             break;
                         }
-                    } while (true);
-                    if(result == 1 || result == -3)
+                    } while (IsLearning);
+                    if (!IsLearning)
                     {
-                        loger.Log("重新加载该课程。");
+                        Log.Info("停止学习");
+                        return;//AutoLearnCore 退出
+                    }
+                    if (result == 1 || result == -3)
+                    {
+                        Log.Info("重新加载该课程。");
                         continue;
                     }
-                    loger.Log("开始学习: " + course.Name);
+                    Log.Info("开始学习: " + course.Name);
                     while (!course.Learn(realPlaySpeed))
                     {
                         Thread.Sleep(5000);
@@ -409,9 +428,9 @@ namespace AutoLearn
                             cnt_init++;
                         }
 
-                        if (!IsRunning)
+                        if (!IsLearning)
                         {
-                            loger.Log("停止学习");
+                            Log.Info("停止学习");
                             return;//AutoLearnCore 退出
                         }
                     }
@@ -419,16 +438,16 @@ namespace AutoLearn
                 }
                 catch (Exception e)
                 {
-                    if (!IsRunning)
+                    if (!IsLearning)
                     {
                         break;
                     }
                     course.CloseCourse();
-                    loger.Log(course.Id + e.Message);
+                    Log.Error(course.Id + e.Message);
                 }
             }
 
-            loger.Log("当前筛选下的所有课程学习阶段已完成");
+            Log.Info("当前筛选下的所有课程学习阶段已完成");
             MessageBox.Show("当前筛选下的所有课程学习阶段已完成");
         }
         private void EvalutionCourse(string courseId)
@@ -439,16 +458,17 @@ namespace AutoLearn
             }
             try
             {
-                driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/els/html/studyCourse/studyCourse.enterCourse.do?"
-                                      + "courseId=" + courseId
-                                      + "&courseType=NEW_COURSE_CENTER&studyType=STUDY");
-                Object ret = driver.ExecuteAsyncScript(JSCodeTest, "evaluateCourse('" + courseId + "')");
+                driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?"
+                                        + "courseType=NEW_COURSE_CENTER&"
+                                        + "courseId=" + courseId);
+                string cmd = $"evaluateCourse('{courseId}','{elnSessionId}');";
+                Object ret = driver.ExecuteAsyncScript(JSCodeTest, cmd);
                 if (ret == null)
                 {
-                    loger.Log("评价失败：" + courseId);
+                    Log.Error("评价失败：" + courseId);
                     return;
                 }
-                loger.Log(ret.ToString());
+                Log.Info(ret.ToString());
 
                 JObject pairs = JObject.Parse(ret.ToString());
                 bool state = pairs["state"].Value<bool>();
@@ -456,26 +476,26 @@ namespace AutoLearn
                 {
                     //检查是否有考试
                     string nextStep = pairs["nextStep"].Value<string>();
-                    loger.Log(nextStep);
+                    Log.Info(nextStep);
                     if (nextStep != null && nextStep == "COURSE_EXAM")
                     {
-                        loger.Log("自动评价已完成，该课程需要测试。");
+                        Log.Info("自动评价已完成，该课程需要测试。");
                     }
                     else
                     {
                         float courseScore = pairs["courseScore"].Value<float>();
                         float coursePeriod = pairs["coursePeriod"].Value<float>();
-                        loger.Log(" 获得：" + courseScore + "学分 " + coursePeriod + "学时");
+                        Log.Info(" 获得：" + courseScore + "学分 " + coursePeriod + "学时");
                     }
                 }
                 else
                 {
-                    loger.Log("评价失败：" + courseId);
+                    Log.Error("评价失败：" + courseId);
                 }
             }
             catch (Exception e)
             {
-                loger.Log("评价失败：" + courseId);
+                Log.Error("评价失败：" + courseId + e);
             }
         }
         private void EvalutionCourse(Course course)
@@ -492,12 +512,12 @@ namespace AutoLearn
                 JObject pairs = JObject.Parse(ret.ToString());
                 result[0] = pairs["elsCourseScore"].Value<float>();
                 result[1] = pairs["elsCoursePeriod"].Value<float>();
-                loger.Log("查询成功 学分：" + result[0] + " 学时：" + result[1]);
+                Log.Info("查询成功 学分：" + result[0] + " 学时：" + result[1]);
             }
             catch(Exception e)
             {
-                loger.Log(e.Message);
-                loger.Log("学分查询失败。");
+                Log.Error(e.Message);
+                Log.Error("学分查询失败。");
             }
             return result;
         }

@@ -11,11 +11,8 @@ namespace AutoLearn
     public partial class Form1 : Form
     {
         private AutoLearnCore learnCore;
-        private Loger loger;
         private string username;
         private string password;
-        private string username2;
-        private string password2;
         private bool isSpeedUp = false;
         private int playSpeed = 1;
         private bool isIniting = true;
@@ -41,7 +38,7 @@ namespace AutoLearn
 
                 foreach (byte b in hashBytes)
                 {
-                    sb.Append(b.ToString("x2")); // ½«Ã¿¸ö×Ö½Ú¸ñÊ½»¯ÎªÁ½Î»µÄÊ®Áù½øÖÆÊı
+                    sb.Append(b.ToString("x2")); // å°†æ¯ä¸ªå­—èŠ‚æ ¼å¼åŒ–ä¸ºä¸¤ä½çš„åå…­è¿›åˆ¶æ•°
                 }
 
                 return sb.ToString();
@@ -78,7 +75,7 @@ namespace AutoLearn
         }
         private async Task CheckVersion()
         {
-            loger.Log("µ±Ç°°æ±¾:" + Config.VERSION);
+            Log.Info("å½“å‰ç‰ˆæœ¬:" + Config.VERSION);
 
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(textBoxServerURL.Text);
@@ -97,16 +94,16 @@ namespace AutoLearn
                 }
                 else
                 {
-                    throw new Exception("·´ĞòÁĞ»¯Ê§°Ü");
+                    throw new Exception("ååºåˆ—åŒ–å¤±è´¥");
                 }
 
                 if (packInformation.files_number == 0)
                 {
-                    loger.Log("µ±Ç°°æ±¾ÒÑÊÇ×îĞÂ");
+                    Log.Info("å½“å‰ç‰ˆæœ¬å·²æ˜¯æœ€æ–°");
                     return;
                 }
-                loger.Log("×îĞÂ°æ±¾:" + packInformation.version);
-                loger.Log(packInformation.message);
+                Log.Info("æœ€æ–°ç‰ˆæœ¬:" + packInformation.version);
+                Log.Info(packInformation.message);
 
                 Thread thread = new(() =>
                 {
@@ -117,30 +114,30 @@ namespace AutoLearn
 
                         if (md5 == fileInformation.md5)
                         {
-                            loger.Log(fileInformation.filename + "ÒÑÊÇ×îĞÂ");
+                            Log.Info(fileInformation.filename + "å·²æ˜¯æœ€æ–°");
                         }
                         else
                         {
-                            loger.Log(fileInformation.filename + "¿ªÊ¼¸üĞÂ");
+                            Log.Info(fileInformation.filename + "å¼€å§‹æ›´æ–°");
                             DownloadFile(fileInformation);
                             cnt++;
                         }
                     }
                     if (cnt != 0)
                     {
-                        // ¸üĞÂÍê³É
-                        loger.Log("ÏÂÔØÍê³É");
+                        // æ›´æ–°å®Œæˆ
+                        Log.Info("ä¸‹è½½å®Œæˆ");
 
-                        // ÔÚÕâÀïÌí¼ÓÖØÆô AutoLearn µÄÂß¼­
-                        // µ¯³öÏûÏ¢¿ò
-                        MessageBox.Show(packInformation.message + "\nÏÂÔØÍê³É¼´½«ÖØÆôAutoLearn");
+                        // åœ¨è¿™é‡Œæ·»åŠ é‡å¯ AutoLearn çš„é€»è¾‘
+                        // å¼¹å‡ºæ¶ˆæ¯æ¡†
+                        MessageBox.Show(packInformation.message + "\nä¸‹è½½å®Œæˆå³å°†é‡å¯AutoLearn");
 
-                        // Ö´ĞĞÖØÆô AutoLearn µÄÂß¼­
+                        // æ‰§è¡Œé‡å¯ AutoLearn çš„é€»è¾‘
                         ProcessStartInfo processInfo = new()
                         {
                             FileName = "./update.bat",
-                            CreateNoWindow = true, // ²»´´½¨ÃüÁîÌáÊ¾·û´°¿Ú
-                            UseShellExecute = false // ±ØĞëÎª false
+                            CreateNoWindow = true, // ä¸åˆ›å»ºå‘½ä»¤æç¤ºç¬¦çª—å£
+                            UseShellExecute = false // å¿…é¡»ä¸º false
                         };
                         new Process
                         {
@@ -153,8 +150,8 @@ namespace AutoLearn
             }
             catch (Exception e)
             {
-                loger.Log(e.Message);
-                loger.Log("¼ì²é°æ±¾Ê§°Ü");
+                Log.Error(e.Message);
+                Log.Error("æ£€æŸ¥ç‰ˆæœ¬å¤±è´¥");
                 packInformation = new()
                 {
                     files_number = 0
@@ -189,26 +186,24 @@ namespace AutoLearn
             this.Left = x;
             this.Top = 20;
 
-            loger = new(listBox1);
-            learnCore = new(loger);
+            Log.RegisterTextBox(listBox1);
+            learnCore = new();
 
-            // ³õÊ¼»¯¿Î³Ì¹ıÂËÆ÷
+            // åˆå§‹åŒ–è¯¾ç¨‹è¿‡æ»¤å™¨
             courseFilterCheckBox = new CheckBox[Config.CF_ROW, Config.CF_COL];
 
             for (int i = 0; i < Config.CF_ROW; ++i)
             {
                 for (int j = 0; j < Config.CF_COL; ++j)
                 {
-                    Control? controls = Controls.Find(string.Format("cb_cf_{0}{1}", i, j), true).FirstOrDefault() ?? throw new Exception("³õÊ¼»¯¿Î³Ì¹ıÂËÆ÷Ê§°Ü!");
-                    courseFilterCheckBox[i, j] = controls as CheckBox ?? throw new Exception("¿Î³Ì¹ıÂËÆ÷×ª»»Ê§°Ü£¡");
+                    Control? controls = Controls.Find(string.Format("cb_cf_{0}{1}", i, j), true).FirstOrDefault() ?? throw new Exception("åˆå§‹åŒ–è¯¾ç¨‹è¿‡æ»¤å™¨å¤±è´¥!");
+                    courseFilterCheckBox[i, j] = controls as CheckBox ?? throw new Exception("è¯¾ç¨‹è¿‡æ»¤å™¨è½¬æ¢å¤±è´¥ï¼");
                 }
             }
 
-            //¿ªÊ¼¼ÓÔØÅäÖÃ
+            //å¼€å§‹åŠ è½½é…ç½®
             username = Config.GetConfig("username");
             password = Config.GetConfig("password");
-            username2 = Config.GetConfig("username2");
-            password2 = Config.GetConfig("password2");
             if (!bool.TryParse(Config.GetConfig("isSpeedUp"), out isSpeedUp))
             {
                 isSpeedUp = false;
@@ -235,8 +230,6 @@ namespace AutoLearn
 
             textBoxUsername.Text = username;
             textBoxPassword.Text = password;
-            textBoxUsername2.Text = username2;
-            textBoxPassword2.Text = password2;
 
             checkBox1.Checked = isSpeedUp;
             numericUpDown1.Value = playSpeed;
@@ -251,19 +244,17 @@ namespace AutoLearn
 
             isIniting = false;
 
-            // µÈ´ıÇı¶¯¼ì²éÍêÖ®ºóÔÙÊ¹ÄÜ
+            // ç­‰å¾…é©±åŠ¨æ£€æŸ¥å®Œä¹‹åå†ä½¿èƒ½
             button__start.Enabled = false;
         }
         private void Form1_Closing(object sender, FormClosingEventArgs e)
         {
             learnCore.Quit();
 
-            //Ğ´ÅäÖÃÏî
+            //å†™é…ç½®é¡¹
             Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             Config.SetConfig(configuration, "username", username);
             Config.SetConfig(configuration, "password", password);
-            Config.SetConfig(configuration, "username2", username2);
-            Config.SetConfig(configuration, "password2", password2);
             Config.SetConfig(configuration, "isSpeedUp", isSpeedUp.ToString());
             Config.SetConfig(configuration, "playSpeed", playSpeed.ToString());
 
@@ -285,17 +276,15 @@ namespace AutoLearn
             Config.SetConfig(configuration, "courseFilter", string.Join(",", courseFilterStates));
 
             configuration.Save();
-
-            loger.Save();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
-                button__start.Text = "Æô¶¯";
+                button__start.Text = "å¯åŠ¨";
                 learnCore.Quit();
-                loger.Log("»á»°½áÊø");
+                Log.Info("ä¼šè¯ç»“æŸ");
                 button2.Enabled = false;
                 button3.Enabled = false;
                 dateTimePicker1.Enabled = false;
@@ -307,9 +296,9 @@ namespace AutoLearn
                 {
                     return;
                 }
-                loger.Log("ÕıÔÚ¼ÓÔØ...");
-                button__start.Text = "Í£Ö¹";
-                learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
+                Log.Info("æ­£åœ¨åŠ è½½...");
+                button__start.Text = "åœæ­¢";
+                await learnCore.Login(textBoxUsername.Text, textBoxPassword.Text);
                 button2.Enabled = true;
                 button3.Enabled = true;
                 dateTimePicker1.Enabled = true;
@@ -322,21 +311,21 @@ namespace AutoLearn
             button2.Enabled = false;
             if (isStartLearn)
             {
-                button2.Text = "¿ªÊ¼Ñ§Ï°";
+                button2.Text = "å¼€å§‹å­¦ä¹ ";
 
-                learnCore.IsRunning = false;
+                learnCore.IsLearning = false;
                 if (learnThread.ThreadState == System.Threading.ThreadState.Running)
                 {
                     learnThread.Join();
                 }
-                loger.Log("Ïß³ÌÖÕÖ¹");
+                Log.Info("çº¿ç¨‹ç»ˆæ­¢");
 
                 isStartLearn = false;
             }
             else
             {
-                button2.Text = "Í£Ö¹Ñ§Ï°";
-                learnCore.IsRunning = true;
+                button2.Text = "åœæ­¢å­¦ä¹ ";
+                learnCore.IsLearning = true;
 
                 UpdateCourseFilter();
                 learnCore.GetCourseList(courseFilter, checkBoxAutoEvaluate.Checked);
@@ -351,91 +340,31 @@ namespace AutoLearn
             button2.Enabled = true;
         }
 
-        private void buttonLearnGXK_Click(object sender, EventArgs e)
-        {
-            ChromeDriver driver = new();
-            driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php");
-            loger.Log("³¢ÊÔµÇÂ¼¹«Ğè¿Î");
-            driver.FindElement(By.Id("user")).SendKeys(username2);
-            driver.FindElement(By.Id("pass")).SendKeys(password2);
-            driver.FindElement(By.Id("submit-btn")).Submit();
-            loger.Log("µÇÂ½³É¹¦");
-            try
-            {
-                Cookie cookie = driver.Manage().Cookies.GetCookieNamed("PHPSESSID");
-                loger.Log(cookie.Value);
-            }
-            catch (Exception)
-            {
-                loger.Log("£¿");
-            }
-            string JSCodeCommonCourse;
-            {
-                using StreamReader sr = new StreamReader("JSCodeCommonCourse.js");
-                JSCodeCommonCourse = sr.ReadToEnd();
-            }
-            Object ret = driver.ExecuteAsyncScript(JSCodeCommonCourse);
-            string[] urls = new string[]{
-                "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=45",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=49",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=50",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=51",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=52",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=62",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=34",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=54",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=55",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=33",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=56",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=13",
-
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=12",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=3",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=1",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=11",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=46",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=47",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=48",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=57",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=58",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=59",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=60",
-    "https://yuanjian.yi-bo.cn/index.php?m=Index&a=video_show&id=61"
-        };
-            for (int i = 0; i < urls.Length; i++)
-            {
-                driver.Navigate().GoToUrl(urls[i]);
-                loger.Log(string.Format("µÚ{0}¿ÎÑ§Ï°Íê³É", i + 1));
-            }
-            driver.Navigate().GoToUrl("https://yuanjian.yi-bo.cn/index.php?m=Index&a=exam&type=1");
-            loger.Log("¹«Ğè¿ÎÑ§Ï°Íê³É¡£");
-            //driver.Quit();
-        }
         private void button3_Click(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
                 float[] ret = learnCore.GetScoreAndPeriod(dateTimePicker1.Text, dateTimePicker2.Text);
-                label5.Text = "Ñ§·Ö£º" + ret[0];
-                label6.Text = "Ñ§Ê±£º" + ret[1];
+                label5.Text = "å­¦åˆ†ï¼š" + ret[0];
+                label6.Text = "å­¦æ—¶ï¼š" + ret[1];
             }
         }
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
                 float[] ret = learnCore.GetScoreAndPeriod(dateTimePicker1.Text, dateTimePicker2.Text);
-                label5.Text = "Ñ§·Ö£º" + ret[0];
-                label6.Text = "Ñ§Ê±£º" + ret[1];
+                label5.Text = "å­¦åˆ†ï¼š" + ret[0];
+                label6.Text = "å­¦æ—¶ï¼š" + ret[1];
             }
         }
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
-            if (learnCore.IsRunning)
+            if (learnCore.DriverIsRun)
             {
                 float[] ret = learnCore.GetScoreAndPeriod(dateTimePicker1.Text, dateTimePicker2.Text);
-                label5.Text = "Ñ§·Ö£º" + ret[0];
-                label6.Text = "Ñ§Ê±£º" + ret[1];
+                label5.Text = "å­¦åˆ†ï¼š" + ret[0];
+                label6.Text = "å­¦æ—¶ï¼š" + ret[1];
             }
         }
 
@@ -447,11 +376,11 @@ namespace AutoLearn
             }
             if (checkBox1.Checked)
             {
-                // Ñ¡Ôñ±¶ËÙ²¥·Å ÌáÊ¾ĞÅÏ¢
-                DialogResult result = MessageBox.Show("È·ÈÏÊÇ·ñ¿ªÆô±¶ËÙ²¥·Å£¿²»½¨ÒéµÄ¹¦ÄÜ£¬²»È·¶¨µ¼ÖÂÆäËûÎÊÌâºÍºó¹û£¬ÇëÕå×Ã¡£", "¾¯¸æ", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                // é€‰æ‹©å€é€Ÿæ’­æ”¾ æç¤ºä¿¡æ¯
+                DialogResult result = MessageBox.Show("ç¡®è®¤æ˜¯å¦å¼€å¯å€é€Ÿæ’­æ”¾ï¼Ÿä¸å»ºè®®çš„åŠŸèƒ½ï¼Œä¸ç¡®å®šå¯¼è‡´å…¶ä»–é—®é¢˜å’Œåæœï¼Œè¯·æ–Ÿé…Œã€‚", "è­¦å‘Š", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (result == DialogResult.Yes)
                 {
-                    // È·ÈÏ¿ªÆô
+                    // ç¡®è®¤å¼€å¯
                     numericUpDown1.Enabled = true;
                     numericUpDown1.Value = 4;
                 }
@@ -490,26 +419,16 @@ namespace AutoLearn
             password = textBoxPassword.Text;
         }
 
-        private void textBoxUsername2_TextChanged(object sender, EventArgs e)
-        {
-            username2 = textBoxUsername2.Text;
-        }
-
-        private void textBoxPassword2_TextChanged(object sender, EventArgs e)
-        {
-            password2 = textBoxPassword2.Text;
-        }
-
         private async void Form1_Shown(object sender, EventArgs e)
         {
             //CheckEnvironment();
             button__start.Enabled = true;
-            await CheckVersion();
+            // await CheckVersion();
         }
 
         private async void button4_Click(object sender, EventArgs e)
         {
-            await CheckVersion();
+            // await CheckVersion();
         }
 
         private void cb_cf_CheckedChanged(object sender, EventArgs e)
@@ -520,7 +439,7 @@ namespace AutoLearn
 
             //if (row == 4)
             //{
-            //    // ¸ÃĞĞÎªµ¥Ñ¡
+            //    // è¯¥è¡Œä¸ºå•é€‰
             //    if (cb.Checked)
             //    {
             //        for (int j = 0; j < Config.CF_COL; ++j)
@@ -539,10 +458,10 @@ namespace AutoLearn
             //    return;
             //}
 
-            // ÆäËûĞĞ
+            // å…¶ä»–è¡Œ
             if (col == 0)
             {
-                // Ñ¡ÖĞÁËÇ°4ĞĞ µÄall
+                // é€‰ä¸­äº†å‰4è¡Œ çš„all
                 if (cb.Checked)
                 {
                     for (int j = 1; j < Config.CF_COL; ++j)
@@ -557,7 +476,7 @@ namespace AutoLearn
             }
             else
             {
-                // Ñ¡ÖĞÁËÃ¿ĞĞµÄÆäËûµÄ
+                // é€‰ä¸­äº†æ¯è¡Œçš„å…¶ä»–çš„
                 if (cb.Checked)
                 {
                     courseFilterCheckBox[row, 0].Checked = false;
@@ -573,7 +492,7 @@ namespace AutoLearn
 
             if (row == 4)
             {
-                // ¸ÃĞĞÎªµ¥Ñ¡
+                // è¯¥è¡Œä¸ºå•é€‰
                 if (!cb.Checked)
                 {
                     for (int j = 0; j < Config.CF_COL; ++j)
