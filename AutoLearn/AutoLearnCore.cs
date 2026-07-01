@@ -502,6 +502,52 @@ namespace AutoLearn
         {
             EvalutionCourse(course.Id);
         }
+        private void ExamCourse(string courseId)
+        {
+            if (driver == null)
+            {
+                return;
+            }
+            try
+            {
+                driver.Navigate().GoToUrl("https://sxqc-gbpy.21tb.com/courseSetting/courseLearning/play?"
+                                        + "courseType=NEW_COURSE_CENTER&"
+                                        + "courseId=" + courseId);
+                string cmd = $"courseExam('{courseId}');";
+                Object ret = driver.ExecuteAsyncScript(JSCodeTest, cmd);
+                if (ret == null)
+                {
+                    Log.Error("考试失败：" + courseId);
+                    return;
+                }
+                Log.Info(ret.ToString());
+
+                JObject pairs = JObject.Parse(ret.ToString());
+                bool state = pairs["state"].Value<bool>();
+                if (state)
+                {
+                    bool examPass = pairs["examPass"].Value<bool>();
+                    float score = pairs["score"].Value<float>();
+                    int examCount = pairs["examCount"].Value<int>();
+                    if(!examPass){
+                        Log.Info($"考试未通过，成绩：{score}，考试次数：{examCount}");
+                    }
+                    else{
+                        float courseScore = pairs["courseScore"].Value<float>();
+                        float coursePeriod = pairs["coursePeriod"].Value<float>();
+                        Log.Info($"考试通过，成绩：{score}，考试次数：{examCount} 获得：{courseScore}学分 {coursePeriod}学时");
+                    }
+                }
+                else
+                {
+                    Log.Error("考试失败：" + courseId);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("考试失败：" + courseId + e);
+            }
+        }
         public float[] GetScoreAndPeriod(string startTime,string endTime)
         {
             float[] result = new float[2] { 0, 0 };

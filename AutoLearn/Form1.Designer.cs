@@ -77,6 +77,7 @@ namespace AutoLearn
             button4 = new Button();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            checkBox2 = new CheckBox();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
             groupBox3.SuspendLayout();
@@ -106,6 +107,7 @@ namespace AutoLearn
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(checkBox2);
             groupBox1.Controls.Add(numericUpDown1);
             groupBox1.Controls.Add(checkBox1);
             groupBox1.Controls.Add(checkBoxAutoEvaluate);
@@ -123,7 +125,7 @@ namespace AutoLearn
             // numericUpDown1
             // 
             numericUpDown1.Enabled = false;
-            numericUpDown1.Location = new Point(208, 53);
+            numericUpDown1.Location = new Point(208, 85);
             numericUpDown1.Name = "numericUpDown1";
             numericUpDown1.ReadOnly = true;
             numericUpDown1.Size = new Size(43, 23);
@@ -134,7 +136,7 @@ namespace AutoLearn
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(138, 54);
+            checkBox1.Location = new Point(138, 85);
             checkBox1.Name = "checkBox1";
             checkBox1.Size = new Size(75, 21);
             checkBox1.TabIndex = 7;
@@ -613,6 +615,17 @@ namespace AutoLearn
             tabPage1.TabIndex = 0;
             tabPage1.Text = "专业课";
             // 
+            // checkBox2
+            // 
+            checkBox2.AutoSize = true;
+            checkBox2.Location = new Point(138, 55);
+            checkBox2.Name = "checkBox2";
+            checkBox2.Size = new Size(99, 21);
+            checkBox2.TabIndex = 8;
+            checkBox2.Text = "是否自动考试";
+            checkBox2.UseVisualStyleBackColor = true;
+            checkBox2.CheckedChanged += checkBox2_CheckedChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -688,5 +701,6 @@ namespace AutoLearn
         private TabControl tabControl1;
         private TabPage tabPage1;
         private CheckBox cb_cf_43;
+        private CheckBox checkBox2;
     }
 }

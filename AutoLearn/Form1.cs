@@ -15,6 +15,7 @@ namespace AutoLearn
         private string password;
         private bool isSpeedUp = false;
         private int playSpeed = 1;
+        private bool isAutoExam = false;
         private bool isIniting = true;
         private Thread learnThread;
         private bool isStartLearn = false;
@@ -213,6 +214,10 @@ namespace AutoLearn
             {
                 playSpeed = 1;
             }
+            if(!bool.TryParse(Config.GetConfig("isAutoExam"), out isAutoExam))
+            {
+                isAutoExam = false;
+            }
             string courseFilterConfigString = Config.GetConfig("courseFilter");
             if (!string.IsNullOrEmpty(courseFilterConfigString))
             {
@@ -233,6 +238,8 @@ namespace AutoLearn
 
             checkBox1.Checked = isSpeedUp;
             numericUpDown1.Value = playSpeed;
+
+            checkBox2.Checked = isAutoExam;
 
             dateTimePicker1.Value = new DateTime(DateTime.Now.Year, 1, 1);
             dateTimePicker2.Value = DateTime.Now;
@@ -257,6 +264,7 @@ namespace AutoLearn
             Config.SetConfig(configuration, "password", password);
             Config.SetConfig(configuration, "isSpeedUp", isSpeedUp.ToString());
             Config.SetConfig(configuration, "playSpeed", playSpeed.ToString());
+            Config.SetConfig(configuration, "isAutoExam", isAutoExam.ToString());
 
             string[] courseFilterStates = new string[Config.CF_ROW * Config.CF_COL];
             for (int i = 0; i < Config.CF_ROW; ++i)
@@ -306,7 +314,7 @@ namespace AutoLearn
                 button3_Click(null, null);
             }
         }
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
             button2.Enabled = false;
             if (isStartLearn)
@@ -328,7 +336,7 @@ namespace AutoLearn
                 learnCore.IsLearning = true;
 
                 UpdateCourseFilter();
-                learnCore.GetCourseList(courseFilter, checkBoxAutoEvaluate.Checked);
+                learnCore.GetCourseList(courseFilter, checkBoxAutoEvaluate.Checked, isAutoExam);
                 learnThread = new Thread(learnCore.Learn)
                 {
                     IsBackground = true
@@ -505,6 +513,33 @@ namespace AutoLearn
                 }
                 cb.Checked = true;
             }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (isIniting)
+            {
+                return;
+            }
+            if (checkBox2.Checked)
+            {
+                DialogResult result = MessageBox.Show("确认是否开启自动考试？不确定导致其他问题和后果，请斟酌。", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result != DialogResult.Yes)
+                {
+                    isAutoExam = false;
+                    checkBox2.Checked = false;
+                }
+                else
+                {
+                    isAutoExam = true;
+                }
+            }
+            else
+            {
+                isAutoExam = false;
+            }
+            Debug.WriteLine("isAutoExam: " + isAutoExam);
+            Debug.WriteLine("checkBox2.Checked: " + checkBox2.Checked);
         }
     }
 }
