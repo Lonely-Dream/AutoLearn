@@ -15,6 +15,7 @@ namespace AutoLearn
     internal class AutoLearnCore
     {
         private WebDriver? driver;
+        private readonly ScriptProvider scriptProvider;
         private string JSCodeXHR;
         private string JSCodeOnlineVideoCourse;
         private string JSCodeTwoScreenCourse;
@@ -22,12 +23,20 @@ namespace AutoLearn
         private string JSCodeTest;
         private string JSCodeOnlineDoc;
         private List<Course> courses;
+        private List<CourseTask> courseTasks;
+        private List<int[]> currentCourseFilters;
         private string userDataDir;
         private string diskCacheDir;
         /// <summary>
         /// 磁盘缓存大小 Byte
         /// </summary>
         private readonly long diskCacheSize = 1024 * 1024 * 1024;
+        private readonly LearningWorkflowOptions defaultWorkflowOptions = new(true, false);
+        private LearningWorkflowOptions workflowOptions;
+        private const string CourseStepStudy = "COURSE_COURSE_STUDY";
+        private const string CourseStepEvaluate = "COURSE_EVALUATE";
+        private const string CourseStepExam = "COURSE_EXAM";
+        private const string SupportedCourseStandard = "ONLINEVIDEOCOURSE";
         public int playSpeed = 1;
         private string elnSessionId;
 
@@ -38,31 +47,17 @@ namespace AutoLearn
             driver = null;
             DriverIsRun = false;
             IsLearning = false;
+            scriptProvider = new ScriptProvider();
             courses = new List<Course>();
-            {
-                using StreamReader sr = new StreamReader("JSCodeXHR.js");
-                JSCodeXHR = sr.ReadToEnd();
-            }
-            {
-                using StreamReader sr = new StreamReader("JSCodeTest.js");
-                JSCodeTest = sr.ReadToEnd();
-            }
-            {
-                using StreamReader sr = new StreamReader("JSCodeOnlineVideoCourse.js");
-                JSCodeOnlineVideoCourse = sr.ReadToEnd();
-            }
-            {
-                using StreamReader sr = new StreamReader("JSCodeTwoScreenCourse.js");
-                JSCodeTwoScreenCourse = sr.ReadToEnd();
-            }
-            {
-                using StreamReader sr = new StreamReader("JSCodeOneScreenCourse.js");
-                JSCodeOneScreenCourse = sr.ReadToEnd();
-            }
-            {
-                using StreamReader sr = new StreamReader("JSCodeOnlineDoc.js");
-                JSCodeOnlineDoc = sr.ReadToEnd();
-            }
+            courseTasks = new List<CourseTask>();
+            currentCourseFilters = new List<int[]>();
+            workflowOptions = defaultWorkflowOptions;
+            JSCodeXHR = scriptProvider.Get(ScriptIds.Xhr);
+            JSCodeTest = scriptProvider.Get(ScriptIds.Workflow);
+            JSCodeOnlineVideoCourse = scriptProvider.Get(ScriptIds.OnlineVideoCourse);
+            JSCodeTwoScreenCourse = scriptProvider.Get(ScriptIds.TwoScreenCourse);
+            JSCodeOneScreenCourse = scriptProvider.Get(ScriptIds.OneScreenCourse);
+            JSCodeOnlineDoc = scriptProvider.Get(ScriptIds.OnlineDocCourse);
         }
         public string GenerateQueryURL(List<int[]> courseFilters)
         {
@@ -222,11 +217,41 @@ namespace AutoLearn
             elnSessionId = cookie.Value;
             Log.Info(($"{cookie.Name}={cookie.Value}"));
         }
-        public void GetCourseList(List<int[]> courseFilters, bool isEvalution)
+        public void GetCourseList(List<int[]> courseFilters, LearningWorkflowOptions workflowOptions)
+        {
+            currentCourseFilters = courseFilters.Select(item => new[] { item[0], item[1] }).ToList();
+            this.workflowOptions = workflowOptions;
+            RefreshCourseTasks();
+        }
+
+        /// <summary>
+        /// 刷新课程任务列表，并统计各类课程数量
+        /// </summary>
+        private void RefreshCourseTasks()
+        {
+            courseTasks = FetchCourseTasks(currentCourseFilters);
+            courses.Clear();
+
+            int totalCourse = courseTasks.Count;
+            int cntExam = courseTasks.Count(item => item.CurrentStep == CourseStepExam);
+            int cntStudy = courseTasks.Count(item => item.CurrentStep == CourseStepStudy);
+            int cntSupported = courseTasks.Count(item => item.CurrentStep == CourseStepStudy && item.CourseStandard == SupportedCourseStandard);
+            int cntUnsupported = cntStudy - cntSupported;
+
+            Log.Info("当前筛选下的课程总数:" + totalCourse.ToString());
+            Log.Info("待考试课程数:" + cntExam.ToString());
+            Log.Info("待学习课程数:" + cntSupported.ToString());
+            if (cntUnsupported > 0)
+            {
+                Log.Info("已跳过的非在线视频学习课程数:" + cntUnsupported.ToString());
+            }
+        }
+
+        private List<CourseTask> FetchCourseTasks(List<int[]> courseFilters)
         {
             if (driver == null)
             {
-                return;
+                return new List<CourseTask>();
             }
 
             string queryURL = GenerateQueryURL(courseFilters);
@@ -243,7 +268,7 @@ namespace AutoLearn
                 string.Format("getCourseLists({0},'{1}')", totalCourse, queryURL));
             keyValuePairs = JObject.Parse(buffer);
             JArray rows = keyValuePairs["rows"].Value<JArray>();
-            int cntExam = 0;
+            List<CourseTask> result = new List<CourseTask>();
             foreach(JObject item in rows)
             {
                 string courseStandard = item["courseStandard"].Value<string>();
@@ -266,83 +291,150 @@ namespace AutoLearn
                     Log.Info(courseName + " 受限课程，将跳过。");
                     continue;
                 }
-                if(currentStep == "COURSE_EVALUATE")
+
+                result.Add(new CourseTask
                 {
-                    Log.Info("待评价：" + courseName + " 类型：" + courseStandard);
-                    if (isEvalution)
-                    {
-                        EvalutionCourse(courseId);
-                    }
-                    else
-                    {
-                        Log.Info("评价被关闭。");
-                    }
+                    CourseStandard = courseStandard,
+                    Id = courseId,
+                    Name = courseName,
+                    Code = courseCode,
+                    StepToGetScore = stepToGetScore,
+                    CurrentStep = currentStep,
+                    ShouldGetScore = shouldGetScore,
+                    CoursePeriod = coursePeriod,
+                    Limited = limited
+                });
+            }
+
+            return result;
+        }
+
+        private void BuildLearningQueue()
+        {
+            courses.Clear();
+
+            foreach (CourseTask task in courseTasks)
+            {
+                if (task.CurrentStep != CourseStepStudy)
+                {
+                    continue;
                 }
-                else if(currentStep == "COURSE_COURSE_STUDY")
+
+                Course? course = CreateCourse(task);
+                if (course != null)
                 {
-                    if (courseStandard == "ONLINEVIDEOCOURSE")
-                    {
-                        Log.Info(courseName + " ONLINEVIDEOCOURSE");
-                        courses.Add(
-                            new OnlineVideoCourse(courseId, courseName, shouldGetScore,
-                            coursePeriod, courseCode, stepToGetScore,
-                            driver, JSCodeOnlineVideoCourse, JSCodeXHR)
-                        );
-                    }
-                    else if (courseStandard == "ONLINEDOC")
-                    {
-                        Log.Info(courseName + " ONLINEDOC");
-                        courses.Add(
-                            new OnlineDocCourse(courseId, courseName, shouldGetScore,
-                            coursePeriod, courseCode, stepToGetScore,
-                            driver, JSCodeOnlineDoc, JSCodeXHR)
-                        );
-                    }
-                    else if (courseStandard == "ONESCREEN")
-                    {
-                        Log.Info(courseName + " ONESCREEN");
-                        courses.Add(
-                            new OneScreenCourse(courseId, courseName, shouldGetScore,
-                            coursePeriod, courseCode, stepToGetScore,
-                            driver, JSCodeOneScreenCourse, JSCodeXHR)
-                        );
-                    }
-                    else if (courseStandard == "TWOSCREEN")
-                    {
-                        Log.Info(courseName+ " TWOSCREEN");
-                        courses.Add(
-                            new TwoScreenCourse(courseId, courseName, shouldGetScore,
-                            coursePeriod, courseCode, stepToGetScore,
-                            driver, JSCodeTwoScreenCourse, JSCodeXHR)
-                        );
-                    }
-                    else if (courseStandard == "THREESCREEN")
-                    {
-                        Log.Info(courseName+ " THREESCREEN");
-                        courses.Add(
-                            new TwoScreenCourse(courseId, courseName, shouldGetScore,
-                            coursePeriod, courseCode, stepToGetScore,
-                            driver, JSCodeTwoScreenCourse, JSCodeXHR)
-                        );
-                    }
-                    else
-                    {
-                        Log.Error("暂时不支持：" + courseName + " 类型：" + courseStandard);
-                    }
-                }
-                else if(currentStep == "COURSE_EXAM")
-                {
-                    ++cntExam;
-                    Log.Info(courseName + " 需要进行考试");
-                }
-                else
-                {
-                    Log.Info(courseName + " 处于：" + currentStep);
+                    courses.Add(course);
                 }
             }
-            Log.Info("当前筛选下的课程总数:" + totalCourse.ToString());
-            Log.Info("待考试课程数:" + cntExam.ToString());
-            Log.Info("待学习课程数:" + courses.Count.ToString());
+        }
+
+        private Course? CreateCourse(CourseTask task)
+        {
+            if (driver == null)
+            {
+                return null;
+            }
+
+            if (task.CourseStandard == SupportedCourseStandard)
+            {
+                Log.Info(task.Name + " " + task.CourseStandard);
+                return new OnlineVideoCourse(task.Id, task.Name, task.ShouldGetScore,
+                    task.CoursePeriod, task.Code, task.StepToGetScore,
+                    driver, JSCodeOnlineVideoCourse, JSCodeXHR);
+            }
+
+            Log.Info("暂不启用：" + task.Name + " 类型：" + task.CourseStandard);
+            return null;
+        }
+
+        private void ProcessPendingActionableTasks()
+        {
+            List<string> actionableCourseIds = courseTasks
+                .Where(item => item.CurrentStep == CourseStepEvaluate || item.CurrentStep == CourseStepExam)
+                .Select(item => item.Id)
+                .Distinct()
+                .ToList();
+
+            foreach (string courseId in actionableCourseIds)
+            {
+                if (!IsLearning)
+                {
+                    return;
+                }
+
+                ProcessCourseFollowUpSteps(courseId, false);
+            }
+        }
+
+        private void ProcessCourseFollowUpSteps(string courseId, bool waitForStudyTransition)
+        {
+            const int MaxRefreshRetry = 5;
+            int refreshRetry = 0;
+
+            while (IsLearning)
+            {
+                RefreshCourseTasks();
+                CourseTask? courseTask = courseTasks.FirstOrDefault(item => item.Id == courseId);
+
+                if (courseTask == null)
+                {
+                    Log.Info("课程流程已完成：" + courseId);
+                    return;
+                }
+
+                if (waitForStudyTransition && courseTask.CurrentStep == CourseStepStudy)
+                {
+                    if (refreshRetry >= MaxRefreshRetry)
+                    {
+                        Log.Info("课程学习完成后未发现可处理的评价或考试步骤：" + courseTask.Name);
+                        return;
+                    }
+
+                    refreshRetry++;
+                    Log.Info($"等待课程状态刷新：{courseTask.Name} {refreshRetry}/{MaxRefreshRetry}");
+                    Thread.Sleep(2000);
+                    continue;
+                }
+
+                waitForStudyTransition = false;
+
+                if (!TryHandleCourseStep(courseTask))
+                {
+                    return;
+                }
+            }
+        }
+
+        private bool TryHandleCourseStep(CourseTask courseTask)
+        {
+            if (courseTask.CurrentStep == CourseStepEvaluate)
+            {
+                Log.Info("待评价：" + courseTask.Name + " 类型：" + courseTask.CourseStandard);
+                if (!workflowOptions.AutoEvaluate)
+                {
+                    Log.Info("评价被关闭。");
+                    return false;
+                }
+
+                EvalutionCourse(courseTask.Id);
+                return true;
+            }
+
+            if (courseTask.CurrentStep == CourseStepExam)
+            {
+                Log.Info(courseTask.Name + " 需要进行考试");
+                if (!workflowOptions.AutoExam)
+                {
+                    Log.Info("自动考试被关闭。");
+                    return false;
+                }
+
+                ExamCourse(courseTask.Id);
+                return true;
+            }
+
+            Log.Info(courseTask.Name + " 处于：" + courseTask.CurrentStep);
+            return false;
         }
         public void Learn()
         {
@@ -350,6 +442,16 @@ namespace AutoLearn
             {
                 return;
             }
+            ProcessPendingActionableTasks();
+            if (!IsLearning)
+            {
+                Log.Info("停止学习");
+                return;
+            }
+
+            RefreshCourseTasks();
+            BuildLearningQueue();
+
             if (courses.Count > 1)
             {
                 // 先访问一次课程播放页面,进行资源缓存
@@ -434,6 +536,8 @@ namespace AutoLearn
                             return;//AutoLearnCore 退出
                         }
                     }
+
+                    ProcessCourseFollowUpSteps(course.Id, true);
                     ++i;
                 }
                 catch (Exception e)
@@ -447,8 +551,11 @@ namespace AutoLearn
                 }
             }
 
-            Log.Info("当前筛选下的所有课程学习阶段已完成");
-            MessageBox.Show("当前筛选下的所有课程学习阶段已完成");
+            RefreshCourseTasks();
+            ProcessPendingActionableTasks();
+
+            Log.Info("当前筛选下的自动学习流程已完成");
+            MessageBox.Show("当前筛选下的自动学习流程已完成");
         }
         private void EvalutionCourse(string courseId)
         {
@@ -497,10 +604,6 @@ namespace AutoLearn
             {
                 Log.Error("评价失败：" + courseId + e);
             }
-        }
-        private void EvalutionCourse(Course course)
-        {
-            EvalutionCourse(course.Id);
         }
         private void ExamCourse(string courseId)
         {

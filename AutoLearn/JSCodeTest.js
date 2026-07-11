@@ -74,7 +74,7 @@ function checkVideoPlay(){
 function evaluateCourse(courseId, elnSessionId){
     // 提交星级评分 GET请求
     const queryParams1 = {
-        courseId: "8fea90380821be82543e1110f5e6399c",
+        courseId: courseId,
         star: 5
     }
     $.ajax({

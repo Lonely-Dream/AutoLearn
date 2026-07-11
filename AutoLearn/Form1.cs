@@ -336,7 +336,8 @@ namespace AutoLearn
                 learnCore.IsLearning = true;
 
                 UpdateCourseFilter();
-                learnCore.GetCourseList(courseFilter, checkBoxAutoEvaluate.Checked, isAutoExam);
+                LearningWorkflowOptions workflowOptions = new(checkBoxAutoEvaluate.Checked, isAutoExam);
+                learnCore.GetCourseList(courseFilter, workflowOptions);
                 learnThread = new Thread(learnCore.Learn)
                 {
                     IsBackground = true
