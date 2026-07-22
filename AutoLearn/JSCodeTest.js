@@ -71,6 +71,34 @@ function checkVideoPlay(){
     callback(0);
 }
 
+function getCourseInfo(courseId) { 
+    const postBody = {
+        courseId: courseId,
+        courseType: 'NEW_COURSE_CENTER'
+    };
+    $.ajax({
+        type: 'POST',
+        async: false,
+        url: '/els/html/guangsu/course/courseInfo',
+        data: JSON.stringify(postBody),
+        contentType: 'application/json',
+        success: function (d) {
+            console.log("Course info response:", d);
+            callback(JSON.stringify(d));
+        },
+        error: function (xhr, status, error) {
+            result = {
+                "error": true,
+                "status": status,
+                "message": error,
+                "response": JSON.parse(xhr.responseText),
+            };
+            console.error("Error fetching course info:", result);
+            callback(JSON.stringify(result));
+        }
+    });
+}
+
 function evaluateCourse(courseId, elnSessionId){
     // 提交星级评分 GET请求
     const queryParams1 = {

@@ -309,6 +309,88 @@ namespace AutoLearn
             return result;
         }
 
+        /// <summary>
+        /// 通过 getCourseInfo 接口更新单个课程信息，并同步到 courseTasks 缓存。
+        /// </summary>
+        /// <returns>更新后的课程任务；若课程不存在或获取失败则返回 null。</returns>
+        private CourseTask? RefreshSingleCourseTask(string courseId)
+        {
+            if (driver == null)
+            {
+                return null;
+            }
+
+            CourseTask? courseTask = FetchSingleCourseTask(courseId);
+            int index = courseTasks.FindIndex(item => item.Id == courseId);
+
+            if (courseTask == null)
+            {
+                if (index >= 0)
+                {
+                    courseTasks.RemoveAt(index);
+                }
+                return null;
+            }
+
+            if (index >= 0)
+            {
+                courseTasks[index] = courseTask;
+            }
+            else
+            {
+                courseTasks.Add(courseTask);
+            }
+
+            return courseTask;
+        }
+
+        private CourseTask? FetchSingleCourseTask(string courseId)
+        {
+            if (driver == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                string buffer = (string)driver.ExecuteAsyncScript(JSCodeTest,
+                    string.Format("getCourseInfo('{0}')", courseId));
+                JObject response = JObject.Parse(buffer);
+
+                if (response["data"] is not JObject data)
+                {
+                    Log.Error("获取课程信息失败：" + courseId);
+                    return null;
+                }
+
+                if (data["courseStudyRecord"] is not JObject studyRecord)
+                {
+                    Log.Error("课程学习记录缺失：" + courseId);
+                    return null;
+                }
+
+                JObject? courseInfo = data["courseInfo"] as JObject;
+
+                return new CourseTask
+                {
+                    CourseStandard = courseInfo?["courseStandard"]?.Value<string>() ?? string.Empty,
+                    Id = courseId,
+                    Name = studyRecord["courseName"]?.Value<string>() ?? string.Empty,
+                    Code = courseInfo?["courseCode"]?.Value<string>() ?? string.Empty,
+                    StepToGetScore = studyRecord["stepToGetScore"]?.Value<string>() ?? string.Empty,
+                    CurrentStep = studyRecord["currentStep"]?.Value<string>() ?? string.Empty,
+                    ShouldGetScore = studyRecord["shouldGetScore"]?.Value<float>() ?? 0f,
+                    CoursePeriod = studyRecord["coursePeriod"]?.Value<float>() ?? 0f,
+                    Limited = studyRecord["limited"]?.Value<bool>() ?? false
+                };
+            }
+            catch (Exception e)
+            {
+                Log.Error("获取课程信息失败：" + courseId + " " + e.Message);
+                return null;
+            }
+        }
+
         private void BuildLearningQueue()
         {
             courses.Clear();
@@ -370,11 +452,11 @@ namespace AutoLearn
         {
             const int MaxRefreshRetry = 5;
             int refreshRetry = 0;
+            string? lastHandledStep = null;
 
             while (IsLearning)
             {
-                RefreshCourseTasks();
-                CourseTask? courseTask = courseTasks.FirstOrDefault(item => item.Id == courseId);
+                CourseTask? courseTask = RefreshSingleCourseTask(courseId);
 
                 if (courseTask == null)
                 {
@@ -398,10 +480,19 @@ namespace AutoLearn
 
                 waitForStudyTransition = false;
 
+                // 处理某一步骤后课程状态未推进，说明后续流程已完成，避免重复处理同一步骤。
+                if (lastHandledStep != null && courseTask.CurrentStep == lastHandledStep)
+                {
+                    Log.Info("课程流程已完成：" + courseTask.Name);
+                    return;
+                }
+
                 if (!TryHandleCourseStep(courseTask))
                 {
                     return;
                 }
+
+                lastHandledStep = courseTask.CurrentStep;
             }
         }
 
