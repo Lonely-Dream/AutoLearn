@@ -448,7 +448,14 @@ namespace AutoLearn
             }
         }
 
-        private void ProcessCourseFollowUpSteps(string courseId, bool waitForStudyTransition)
+        /// <summary>
+        /// 处理课程学习之后的评价/考试等后续步骤。
+        /// </summary>
+        /// <returns>
+        /// 课程已离开学习阶段（后续步骤已处理或课程已完成）返回 true；
+        /// 若课程仍处于学习阶段（需要继续学习）返回 false。
+        /// </returns>
+        private bool ProcessCourseFollowUpSteps(string courseId, bool waitForStudyTransition)
         {
             const int MaxRefreshRetry = 5;
             int refreshRetry = 0;
@@ -461,15 +468,15 @@ namespace AutoLearn
                 if (courseTask == null)
                 {
                     Log.Info("课程流程已完成：" + courseId);
-                    return;
+                    return true;
                 }
 
                 if (waitForStudyTransition && courseTask.CurrentStep == CourseStepStudy)
                 {
                     if (refreshRetry >= MaxRefreshRetry)
                     {
-                        Log.Info("课程学习完成后未发现可处理的评价或考试步骤：" + courseTask.Name);
-                        return;
+                        Log.Info("课程仍处于学习阶段，将继续学习：" + courseTask.Name);
+                        return false;
                     }
 
                     refreshRetry++;
@@ -484,16 +491,18 @@ namespace AutoLearn
                 if (lastHandledStep != null && courseTask.CurrentStep == lastHandledStep)
                 {
                     Log.Info("课程流程已完成：" + courseTask.Name);
-                    return;
+                    return true;
                 }
 
                 if (!TryHandleCourseStep(courseTask))
                 {
-                    return;
+                    return true;
                 }
 
                 lastHandledStep = courseTask.CurrentStep;
             }
+
+            return true;
         }
 
         private bool TryHandleCourseStep(CourseTask courseTask)
@@ -550,11 +559,21 @@ namespace AutoLearn
                 course.JumpToCourse(elnSessionId);
                 Thread.Sleep(2000);
             }
+            int learningCourseIndex = -1;
+            int reloadRetry = 0;
             for (int i = 0; i < courses.Count; )
             {
                 Course course = courses[i];
                 int cnt_init = 0;
                 int realPlaySpeed = 0;
+
+                // 针对同一门课程的重载/等待次数进行限制，避免视频始终无法加载时无限循环。
+                const int MaxReloadRetry = 5;
+                if (i != learningCourseIndex)
+                {
+                    learningCourseIndex = i;
+                    reloadRetry = 0;
+                }
 
                 try
                 {
@@ -602,9 +621,30 @@ namespace AutoLearn
                         Log.Info("停止学习");
                         return;//AutoLearnCore 退出
                     }
-                    if (result == 1 || result == -3)
+                    if (result == -3)
                     {
                         Log.Info("重新加载该课程。");
+                        continue;
+                    }
+                    if (result == 1)
+                    {
+                        // 视频长时间未加载：确认课程是否已进入评价/考试阶段，
+                        // 避免在后续阶段仍反复寻找video组件而陷入死循环。
+                        CourseTask? latest = RefreshSingleCourseTask(course.Id);
+                        if (latest == null || latest.CurrentStep != CourseStepStudy)
+                        {
+                            Log.Info("课程已离开学习阶段，处理后续流程：" + course.Name);
+                            ProcessCourseFollowUpSteps(course.Id, false);
+                            ++i;
+                            continue;
+                        }
+                        if (++reloadRetry >= MaxReloadRetry)
+                        {
+                            Log.Info("多次重载后仍无法加载视频，跳过该课程：" + course.Name);
+                            ++i;
+                            continue;
+                        }
+                        Log.Info($"重新加载该课程。{reloadRetry}/{MaxReloadRetry}");
                         continue;
                     }
                     Log.Info("开始学习: " + course.Name);
@@ -628,8 +668,19 @@ namespace AutoLearn
                         }
                     }
 
-                    ProcessCourseFollowUpSteps(course.Id, true);
-                    ++i;
+                    if (ProcessCourseFollowUpSteps(course.Id, true))
+                    {
+                        ++i;
+                    }
+                    else if (++reloadRetry >= MaxReloadRetry)
+                    {
+                        Log.Info("课程状态长时间未推进，跳过该课程：" + course.Name);
+                        ++i;
+                    }
+                    else
+                    {
+                        Log.Info($"课程尚未完成学习，继续学习：{course.Name} {reloadRetry}/{MaxReloadRetry}");
+                    }
                 }
                 catch (Exception e)
                 {

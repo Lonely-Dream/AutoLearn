@@ -26,8 +26,15 @@ function learnNextCourse(isNext) {
 function checkVideo() {
     console.log("Check Video");
 
+    var activeLine = document.getElementsByClassName("first-line active")[0];
+    if (activeLine === undefined || activeLine === null) {
+        //播放列表未就绪，通常表示已离开视频学习页面（如进入评价/考试阶段）
+        console.log("未找到当前播放小节，可能已离开学习阶段。");
+        return -1;
+    }
+
     //检查当前播放小节是否未完成
-    if (document.getElementsByClassName("first-line active")[0].parentElement.classList.contains("finish")) {
+    if (activeLine.parentElement.classList.contains("finish")) {
         //已完成
         //检查章节是否全部学完
         if (learnNextCourse(true) == -1) {
@@ -41,6 +48,11 @@ function checkVideo() {
     }
 
     var video = document.getElementsByTagName("video")[0];
+    if (video === undefined || video === null) {
+        //video组件缺失，通常表示已离开视频学习阶段，交由上层重新判定课程状态
+        console.log("video组件未找到，可能已离开学习阶段。");
+        return -1;
+    }
     if (video.ended) {
         console.log("当前小节播放完成。")
         return learnNextCourse(true);
